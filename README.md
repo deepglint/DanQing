@@ -64,7 +64,6 @@ Hengyu Shen<sup>∗</sup>, [**Tiancheng Gu**](https://scholar.google.com/citatio
     - [Command Line](#command-line-1)
 - [📄 License](#-license)
 - [📝 Citation](#-citation)
-  - [⭐ Don't forget to star this repository if you find it helpful!](#-dont-forget-to-star-this-repository-if-you-find-it-helpful)
 
 ---
 
