@@ -120,8 +120,8 @@ ds =  MsDataset.load('deepglint/DanQing')
 ## License
 The DanQing dataset is licensed under [CC-BY-4.0 License](https://creativecommons.org/licenses/by/4.0/).
 The full license can be found in the [LICENSE.cc-by-4.0 file](./LICENSE.cc-by-4.0).
-The dataset is collected from various sites by analyzing Common Crawl data, an open data web crawling project. 
-The collected data is subject to the license to which each content belongs.
+The dataset is collected from Common Crawl web pages and may contain biased or sensitive content. The collected data is subject to the license to which each content belongs. Users are solely responsible for ensuring compliance with ethical and legal standards in their research or applications.
+
 
 ## Citation
 If you find this repository useful, please use the following BibTeX entry for citation.
