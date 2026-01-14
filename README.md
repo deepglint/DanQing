@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="Figures/logo.png" width="50%">
+    <img src="Figures/danqing.svg" width="50%">
 </p>
 
 ## DanQing: An Up-to-Date Large-Scale Chinese Vision-Language Pre-training Dataset
@@ -30,12 +30,12 @@ Ziyong Feng<sup>‡</sup>,</span>
 ❗️<font color=#ff7b7a>Note: Due to the storage and transmission limitations of Hugging Face, we only release the URLs corresponding to the images on Hugging Face. To access the complete dataset, please download it from ModelScope.</font>
 
 
-## 💡 Introduction
+## 💡 Highlights
+In this paper, we propose DanQing dataset, which contains 100 million image-text pairs collected from Common Crawl. Different from existing datasets, DanQing is curated through a more rigorous selection process, yielding superior data quality. Moreover, DanQing is primarily built from 2024–2025 web data, enabling models to better capture evolving semantic trends and thus offering greater practical utility. We compare DanQing with existing datasets by conduct continual pre-training of the SigLIP2 model. Experimental results show that DanQing consistently achieves superior performance across a range of Chinese downstream tasks, including zero-shot classification, cross-modal retrieval, and LMM-based evaluations. 
 <p align="center">
     <img src="Figures/framework.png" width="100%">
 </p>
-In this paper, we propose DanQing dataset, which contains 100 million image-text pairs collected from Common Crawl. Different from existing datasets, DanQing is curated through a more rigorous selection process, yielding superior data quality. Moreover, DanQing is primarily built from 2024–2025 web data, enabling models to better capture evolving semantic trends and thus offering greater practical utility. We compare DanQing with existing datasets by conduct continual pre-training of the SigLIP2 model. Experimental results show that DanQing consistently achieves superior performance across a range of Chinese downstream tasks, including zero-shot classification, cross-modal retrieval, and LMM-based evaluations. 
-To facilitate further research in Chinese vision-language pre-training, we will open-source the DanQing dataset under the Creative Common CC-BY 4.0 license.
+
 
 ## 💻 Dataset Information
 ### Data Preview
@@ -111,3 +111,7 @@ If you find this repository useful, please use the following BibTeX entry for ci
 
 
 ```
+
+<div align="center">
+⭐ Don't forget to star this repository if you find it helpful!
+</div>
