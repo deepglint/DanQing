@@ -295,6 +295,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: center center;
       display: block;
       transition: transform 0.4s ease, opacity 0.4s ease;
     }
@@ -3795,8 +3796,7 @@
       // Try multiple path formats
       const possiblePaths = [
         'static/Danqing_examples/captions.txt',
-        './static/Danqing_examples/captions.txt',
-        '/Users/gutiancheng/Downloads/DanQing/static/Danqing_examples/captions.txt'
+        './static/Danqing_examples/captions.txt'
       ];
 
       let loadAttempt = 0;
