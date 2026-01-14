@@ -1,0 +1,3904 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="DanQing: An Up-to-Date Large-Scale Chinese Vision-Language Pre-training Dataset">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DanQing & UniME-v2</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  
+  <style>
+    :root {
+      --primary-color: #2563eb;
+      --secondary-color: #3b82f6;
+      --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Noto Sans', sans-serif;
+      background-color: #ffffff;
+      color: #1e293b;
+      position: relative;
+    }
+
+    /* 滚动进度条 */
+    #scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      z-index: 9999;
+      transition: width 0.1s ease;
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+    }
+
+    /* 返回顶部按钮 */
+    #back-to-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 50px;
+      height: 50px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    #back-to-top:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+      background: var(--secondary-color);
+    }
+
+    #back-to-top.show {
+      display: flex;
+      animation: fadeInUp 0.3s ease;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Hero Section 优化 */
+    .hero-custom {
+      background: var(--bg-gradient);
+      padding: 5rem 1rem;
+      border-bottom: 1px solid #e2e8f0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-custom::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: float 20s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      50% { transform: translate(-30px, -30px) rotate(180deg); }
+    }
+
+    .publication-title {
+      font-family: 'Google Sans', sans-serif;
+      font-weight: 800 !important;
+      font-size: 3rem !important;
+      line-height: 1.2;
+      margin-bottom: 1.5rem !important;
+      color: #0f172a;
+    }
+
+    .publication-title i { font-style: italic; }
+
+    .publication-authors {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem 0.75rem;
+      margin: 1.5rem 0;
+      line-height: 1.8;
+    }
+    
+    .author-block {
+      display: inline-block;
+      font-weight: 600;
+      font-size: 1.15rem;
+      white-space: nowrap;
+    }
+    
+    .author-separator {
+      color: #94a3b8;
+      font-weight: 400;
+      user-select: none;
+    }
+
+    .author-block a {
+      color: var(--primary-color);
+      transition: all 0.2s ease;
+      position: relative;
+      text-decoration: none;
+    }
+
+    .author-block a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--primary-color);
+      transition: width 0.3s ease;
+    }
+
+    .author-block a:hover {
+      color: #1d4ed8;
+    }
+
+    .author-block a:hover::after {
+      width: 100%;
+    }
+
+    /* 按钮样式 */
+    .link-block a {
+      border-radius: 24px !important;
+      padding: 0 1.5rem !important;
+      font-weight: 600 !important;
+      transition: all 0.3s ease !important;
+    }
+
+    .link-block a:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+
+    /* 紧凑型链接样式 */
+    /* Publication Links 容器样式 */
+    .publication-links-wrapper {
+      background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin-top: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      transition: all 0.3s ease;
+    }
+
+    .publication-links-wrapper:hover {
+      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.1);
+      border-color: rgba(37, 99, 235, 0.2);
+    }
+
+    .publication-links {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0.625rem;
+      margin-top: 0;
+    }
+
+    .link-card {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.625rem;
+      padding: 0.625rem 1.25rem;
+      text-decoration: none;
+      color: #1e293b;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      white-space: nowrap;
+      border-radius: 8px;
+      background: white;
+      border: 1px solid #e2e8f0;
+    }
+
+    .link-card:hover {
+      color: var(--primary-color);
+      background: #f1f5f9;
+      border-color: var(--primary-color);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+    }
+
+    .link-card-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    .link-card-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .link-card-icon i {
+      font-size: 1.1rem;
+      color: var(--primary-color);
+    }
+
+    .link-card-icon span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    .link-card-text {
+      transition: color 0.3s ease;
+    }
+
+    .link-card:hover .link-card-text {
+      color: var(--primary-color);
+    }
+
+    .link-card-arrow {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      color: #94a3b8;
+      transition: all 0.3s ease;
+      margin-left: 0.5rem;
+    }
+
+    .link-card:hover .link-card-arrow {
+      color: var(--primary-color);
+      transform: translate(2px, -2px);
+    }
+
+    .link-card-arrow svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    @media (max-width: 768px) {
+      .publication-links-wrapper {
+        padding: 1rem 1rem;
+      }
+
+      .publication-links {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .link-card {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        gap: 0.5rem;
+      }
+
+      .link-card-icon {
+        width: 20px;
+        height: 20px;
+      }
+
+      .link-card-icon i {
+        font-size: 1rem;
+      }
+    }
+
+    /* 核心贡献卡片 */
+    .contribution-card {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      height: 100%;
+      border: 1px solid #e2e8f0;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    }
+
+    .contribution-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--card-shadow);
+      border-color: var(--primary-color);
+    }
+
+    .card-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    /* Tabs 优化 */
+    .tabs-container {
+      background: #f1f5f9;
+      padding: 0.5rem;
+      border-radius: 12px;
+      display: inline-flex;
+      margin-bottom: 2rem;
+    }
+
+    .tabs li a {
+      border: none !important;
+      border-radius: 8px !important;
+      padding: 0.75rem 1.5rem !important;
+      font-weight: 600;
+      color: #64748b;
+    }
+
+    .tabs li.is-active a {
+      background: white !important;
+      color: var(--primary-color) !important;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    /* 表格优化 */
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      position: relative;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .table-wrapper:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .table th {
+      background-color: #f8fafc !important;
+      color: #475569 !important;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      vertical-align: middle !important;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      transition: background-color 0.2s ease;
+    }
+
+    .table th:hover {
+      background-color: #f1f5f9 !important;
+    }
+
+    .table tr {
+      transition: all 0.2s ease;
+    }
+
+    .table tr:hover {
+      background-color: #f0f9ff !important;
+      transform: scale(1.001);
+    }
+
+    .table td {
+      transition: all 0.2s ease;
+    }
+
+    .highlight-up { color: #16a34a; font-weight: bold; }
+    .highlight-down { color: #dc2626; font-weight: bold; }
+    
+    /* Zero-shot classification table styles */
+    .table-baseline { color: #6b7280; }
+    .table-row-danqing { background-color: #dbeafe !important; }
+    .table-best { font-weight: bold; }
+    .table-second { text-decoration: underline; }
+    .table-header-rotate {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      white-space: nowrap;
+      padding: 0.5rem 0.25rem !important;
+      min-width: 2.5rem;
+      height: 8rem;
+    }
+    
+    @media (max-width: 768px) {
+      .table-header-rotate {
+        writing-mode: horizontal-tb;
+        height: auto;
+        padding: 0.5rem !important;
+        font-size: 0.75rem;
+      }
+    }
+    .table-model-section {
+      background-color: #f1f5f9;
+      font-weight: bold;
+      font-style: italic;
+      text-align: center !important;
+    }
+
+    /* BibTeX 区域 */
+    #bibtex-section {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 2rem;
+      border-radius: 12px;
+      position: relative;
+    }
+
+    pre {
+      background: transparent !important;
+      color: inherit !important;
+      padding: 0 !important;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: white;
+      cursor: pointer;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+    }
+
+    .copy-btn:hover { background: rgba(255,255,255,0.2); }
+
+    /* 动画 */
+    .anchor-content {
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .anchor-content.is-active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Introduction section styles */
+    .intro-problem-box {
+      background: #fef2f2;
+      border-left: 5px solid #dc2626;
+      border-radius: 8px;
+      padding: 0.875rem;
+      margin: 0.75rem 0;
+      transition: all 0.3s ease;
+    }
+
+    .intro-problem-box:hover {
+      transform: translateX(3px);
+      box-shadow: 0 3px 10px rgba(220, 38, 38, 0.12);
+      border-left-width: 6px;
+    }
+
+    .intro-problem-box h4 {
+      color: #dc2626;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .intro-problem-box ul {
+      margin-top: 0.5rem;
+      padding-left: 1rem;
+    }
+
+    .intro-problem-box li {
+      margin-bottom: 0.25rem;
+      line-height: 1.5;
+    }
+
+    .intro-solution-box {
+      background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+      border-left: 5px solid var(--primary-color);
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 0.75rem 0;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .intro-solution-box::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.1) 0%, transparent 70%);
+      transition: transform 0.6s ease;
+    }
+
+    .intro-solution-box:hover {
+      transform: translateX(3px) scale(1.005);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.15);
+      border-left-width: 6px;
+    }
+
+    .intro-solution-box:hover::before {
+      transform: rotate(180deg);
+    }
+
+    .intro-solution-box h4 {
+      color: var(--primary-color);
+      font-weight: 700;
+      margin-bottom: 0.625rem;
+      font-size: 1.05rem;
+    }
+
+    .intro-conclusion-box {
+      background: #f0fdf4;
+      border-left: 5px solid #16a34a;
+      border-radius: 8px;
+      padding: 0.875rem;
+      margin: 0.75rem 0;
+      font-style: italic;
+      color: #166534;
+      transition: all 0.3s ease;
+    }
+
+    .intro-conclusion-box:hover {
+      transform: translateX(3px);
+      box-shadow: 0 3px 10px rgba(22, 163, 74, 0.12);
+      border-left-width: 6px;
+      background: #ecfdf5;
+    }
+
+    .advantage-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      background: var(--primary-color);
+      color: white;
+      border-radius: 50%;
+      font-weight: bold;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .advantage-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      gap: 0.75rem;
+    }
+
+    .advantage-header .card-icon {
+      font-size: 2rem;
+      margin: 0;
+    }
+
+    /* Introduction table compact style */
+    .intro-table-wrapper {
+      margin-bottom: 0;
+    }
+
+    .intro-table-wrapper .table td,
+    .intro-table-wrapper .table th {
+      padding: 0.35rem 0.25rem !important;
+      font-size: 0.7rem;
+    }
+
+    .intro-table-wrapper .table th {
+      font-size: 0.65rem;
+    }
+
+    /* Introduction responsive layout */
+    @media (max-width: 768px) {
+      .columns.is-vcentered {
+        flex-direction: column;
+      }
+      
+      .columns.is-vcentered .column.is-5,
+      .columns.is-vcentered .column.is-7 {
+        width: 100% !important;
+      }
+    }
+    /* Timeline styles - Compact Zigzag Layout */
+    .timeline-container {
+      position: relative;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 1.5rem 0;
+    }
+
+    .timeline-line {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 0;
+      width: 3px;
+      background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+      border-radius: 2px;
+      height: calc(100% - 1rem);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .timeline-item:last-child {
+      margin-bottom: 0;
+    }
+
+    /* 奇数项在左边，偶数项在右边 */
+    .timeline-item:nth-child(odd) {
+      flex-direction: row;
+    }
+
+    .timeline-item:nth-child(even) {
+      flex-direction: row-reverse;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 0.75rem;
+      width: 1.25rem;
+      height: 1.25rem;
+      background: white;
+      border: 3px solid var(--primary-color);
+      border-radius: 50%;
+      z-index: 2;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+    }
+
+    .timeline-item.active .timeline-dot {
+      background: var(--primary-color);
+      transform: translateX(-50%) scale(1.3);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.5);
+    }
+
+    .timeline-content-wrapper {
+      width: calc(50% - 2rem);
+      flex-shrink: 0;
+    }
+
+    .timeline-item:nth-child(odd) .timeline-content-wrapper {
+      margin-right: auto;
+      padding-right: 2rem;
+    }
+
+    .timeline-item:nth-child(even) .timeline-content-wrapper {
+      margin-left: auto;
+      padding-left: 2rem;
+    }
+
+    .timeline-content {
+      background: white;
+      border-radius: 10px;
+      border: 2px solid #e2e8f0;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .timeline-content:hover {
+      border-color: var(--primary-color);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+    }
+
+    .timeline-item.active .timeline-content {
+      border-color: var(--primary-color);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+    }
+
+    .timeline-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      background: #f8fafc;
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .timeline-item.active .timeline-header {
+      background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+    }
+
+    .timeline-header:hover {
+      background: #f1f5f9;
+    }
+
+    .timeline-item.active .timeline-header:hover {
+      background: linear-gradient(135deg, #bfdbfe 0%, #bae6fd 100%);
+    }
+
+    .timeline-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex: 1;
+    }
+
+    .timeline-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      border-radius: 50%;
+      font-weight: bold;
+      font-size: 0.95rem;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+    }
+
+    .timeline-title {
+      margin: 0;
+      color: #1e293b;
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    .timeline-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.75rem;
+      height: 1.75rem;
+      color: var(--primary-color);
+      transition: transform 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .timeline-item.active .timeline-toggle {
+      transform: rotate(180deg);
+    }
+
+    .timeline-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.4s ease;
+      padding: 0 1.25rem;
+    }
+
+    .timeline-item.active .timeline-body {
+      max-height: 500px;
+      padding: 1.25rem;
+    }
+
+    .timeline-body-content {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: #475569;
+      margin: 0;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s;
+    }
+
+    .timeline-item.active .timeline-body-content {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Result step special styling */
+    .timeline-item.result-step .timeline-content {
+      border-color: #16a34a;
+    }
+
+    .timeline-item.result-step .timeline-dot {
+      border-color: #16a34a;
+      background: white;
+    }
+
+    .timeline-item.result-step.active .timeline-dot {
+      background: #16a34a;
+    }
+
+    .timeline-item.result-step .timeline-number {
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+    }
+
+    .timeline-item.result-step.active .timeline-header {
+      background: linear-gradient(135deg, #dcfce7 0%, #d1fae5 100%);
+    }
+
+    @media (max-width: 1024px) {
+      .timeline-container {
+        max-width: 100%;
+        padding: 1.25rem 1rem;
+      }
+
+      .timeline-content-wrapper {
+        width: calc(50% - 1.5rem);
+      }
+
+      .timeline-item:nth-child(odd) .timeline-content-wrapper {
+        padding-right: 1.5rem;
+      }
+
+      .timeline-item:nth-child(even) .timeline-content-wrapper {
+        padding-left: 1.5rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .timeline-container {
+        padding: 1rem 0.5rem;
+      }
+
+      .timeline-line {
+        left: 1rem;
+        transform: none;
+      }
+
+      .timeline-item {
+        flex-direction: row !important;
+        margin-bottom: 1.25rem;
+      }
+
+      .timeline-dot {
+        left: 0.5rem;
+        transform: none;
+        width: 1rem;
+        height: 1rem;
+      }
+
+      .timeline-item.active .timeline-dot {
+        transform: scale(1.2);
+      }
+
+      .timeline-content-wrapper {
+        width: calc(100% - 3rem) !important;
+        margin-left: 2.5rem !important;
+        margin-right: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+      }
+
+      .timeline-header {
+        padding: 0.875rem 1rem;
+      }
+
+      .timeline-number {
+        width: 1.75rem;
+        height: 1.75rem;
+        font-size: 0.85rem;
+      }
+
+      .timeline-title {
+        font-size: 0.95rem;
+      }
+    }
+
+    .method-result-box {
+      background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+      border-left: 5px solid var(--primary-color);
+      border-radius: 10px;
+      padding: 1.5rem 2rem;
+      display: inline-block;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .method-result-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .method-result-box:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.2);
+      border-left-width: 6px;
+    }
+
+    .method-result-box:hover::before {
+      left: 100%;
+    }
+
+    /* Statistics section styles */
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      height: 100%;
+      border: 1px solid #e2e8f0;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      border-color: var(--primary-color);
+    }
+
+    .stat-content {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #475569;
+      margin: 0;
+    }
+
+    .topic-modeling-container {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .topic-analysis-box {
+      background: #f8fafc;
+      border-left: 4px solid var(--primary-color);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .topic-analysis-box:hover {
+      background: #f1f5f9;
+      border-left-width: 6px;
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .topic-content {
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: #475569;
+      margin: 0;
+    }
+
+    /* Analysis section styles */
+    .analysis-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      height: 100%;
+      border: 1px solid #e2e8f0;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .analysis-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      border-color: var(--primary-color);
+    }
+
+    .analysis-content {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: #475569;
+      margin: 0;
+    }
+
+    .analysis-container {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .analysis-text-box {
+      padding: 1.5rem;
+      background: #f8fafc;
+      border-radius: 8px;
+      border-left: 4px solid var(--primary-color);
+      transition: all 0.3s ease;
+    }
+
+    .analysis-text-box:hover {
+      background: #f1f5f9;
+      border-left-width: 6px;
+      transform: translateX(4px);
+    }
+
+    /* 通知框优化 */
+    .notification {
+      border-radius: 10px;
+      border-left: 4px solid var(--primary-color);
+      transition: all 0.3s ease;
+    }
+
+    .notification:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+      .analysis-container .columns {
+        flex-direction: column;
+      }
+      
+      .analysis-container .column.is-5,
+      .analysis-container .column.is-7 {
+        width: 100% !important;
+      }
+    }
+
+    /* 目录导航样式 - 侧边栏 */
+    .table-of-contents {
+      position: fixed;
+      left: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border-radius: 12px;
+      padding: 1.25rem 1rem;
+      width: 220px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(226, 232, 240, 0.6);
+      z-index: 100;
+      max-height: 80vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .table-of-contents:hover {
+      background: rgba(255, 255, 255, 0.95);
+      border-color: rgba(226, 232, 240, 0.8);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    /* 所有屏幕尺寸都贴着左边 */
+    @media (min-width: 1024px) {
+      .table-of-contents {
+        left: 0.5rem;
+      }
+    }
+
+    .table-of-contents::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .table-of-contents::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .table-of-contents::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 2px;
+    }
+
+    .table-of-contents::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    .toc-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 0.875rem;
+      text-align: left;
+      position: relative;
+      padding-bottom: 0.625rem;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .toc-title::after {
+      display: none;
+    }
+
+    .toc-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 0;
+    }
+
+    .toc-item {
+      background: transparent;
+      border-radius: 8px;
+      padding: 0.625rem 0.75rem;
+      border: none;
+      border-left: 3px solid transparent;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      position: relative;
+      overflow: hidden;
+      font-size: 0.875rem;
+    }
+
+    .toc-item:hover {
+      color: var(--primary-color);
+      background: rgba(37, 99, 235, 0.08);
+      border-left-color: var(--primary-color);
+      transform: translateX(4px);
+    }
+
+    .toc-item.active {
+      background: linear-gradient(90deg, rgba(37, 99, 235, 0.15) 0%, rgba(37, 99, 235, 0.05) 100%);
+      border-left-color: var(--primary-color);
+      color: var(--primary-color);
+      font-weight: 600;
+      transform: translateX(4px);
+    }
+
+    .toc-icon {
+      font-size: 0.875rem;
+      color: inherit;
+      flex-shrink: 0;
+      width: 16px;
+      text-align: center;
+    }
+
+    .toc-item.active .toc-icon {
+      color: var(--primary-color);
+    }
+
+    .toc-item-text {
+      font-size: 0.875rem;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    /* 中等屏幕：调整位置和大小，贴着左边 */
+    @media (max-width: 1023px) {
+      .table-of-contents {
+        left: 0.5rem;
+        width: 200px;
+        padding: 1rem 0.875rem;
+        max-height: 75vh;
+      }
+    }
+
+    /* 切换按钮默认隐藏 */
+    .toc-toggle-btn {
+      display: none;
+    }
+
+    /* 小屏幕：改为顶部固定栏 */
+    @media (max-width: 768px) {
+      .table-of-contents {
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: auto;
+        transform: translateY(-100%);
+        width: 100%;
+        max-width: 100%;
+        max-height: 70vh;
+        padding: 1rem;
+        margin: 0;
+        border-radius: 0 0 16px 16px;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+        border: 1px solid rgba(226, 232, 240, 0.6);
+        z-index: 1000;
+        transition: transform 0.3s ease, background 0.3s ease;
+        overflow-y: auto;
+      }
+
+      .table-of-contents.active {
+        background: rgba(255, 255, 255, 0.95);
+        border-color: rgba(226, 232, 240, 0.8);
+      }
+
+      .table-of-contents.active {
+        transform: translateY(0);
+      }
+
+      .toc-title {
+        font-size: 0.9rem;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.5rem;
+      }
+
+      .toc-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+      }
+
+      .toc-item {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.8rem;
+        text-align: center;
+        justify-content: center;
+      }
+
+      .toc-item-text {
+        font-size: 0.8rem;
+      }
+
+      .toc-icon {
+        font-size: 0.875rem;
+      }
+
+      /* 添加展开按钮 - 固定在顶部右侧 */
+      .toc-toggle-btn {
+        position: fixed;
+        right: 1rem;
+        top: 1rem;
+        width: 56px;
+        height: 56px;
+        background: var(--primary-color);
+        color: white;
+        border: 3px solid white;
+        border-radius: 50%;
+        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.5), 0 0 0 4px rgba(37, 99, 235, 0.15);
+        cursor: pointer;
+        z-index: 1001;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        transition: all 0.3s ease;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% {
+          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4), 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+        50% {
+          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.6), 0 0 0 8px rgba(37, 99, 235, 0.2);
+        }
+      }
+
+      .toc-toggle-btn:hover,
+      .toc-toggle-btn:active {
+        background: var(--secondary-color);
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+        animation: none;
+      }
+
+      .toc-toggle-btn.active {
+        background: #dc2626;
+        top: calc(70vh - 4rem);
+        animation: none;
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+      }
+
+      .toc-toggle-btn.active:hover {
+        background: #b91c1c;
+        transform: scale(1.05);
+      }
+
+      /* 为内容添加顶部间距，避免被固定栏遮挡 */
+      body {
+        padding-top: 0;
+      }
+
+      .section {
+        scroll-margin-top: 0;
+      }
+    }
+
+    /* 超小屏幕：单列布局 */
+    @media (max-width: 480px) {
+      .table-of-contents {
+        max-height: 60vh;
+      }
+
+      .toc-grid {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+      }
+
+      .toc-item {
+        padding: 0.625rem 0.5rem;
+        font-size: 0.75rem;
+      }
+
+      .toc-item-text {
+        font-size: 0.75rem;
+      }
+
+      .toc-toggle-btn {
+        width: 52px;
+        height: 52px;
+        font-size: 1.3rem;
+        right: 0.75rem;
+        top: 0.75rem;
+        border-width: 2px;
+      }
+
+      .toc-toggle-btn.active {
+        top: calc(60vh - 3.5rem);
+      }
+    }
+
+    /* 当滚动到顶部附近时，调整侧边栏位置 */
+    .table-of-contents.scrolled {
+      top: 2rem;
+      transform: translateY(0);
+    }
+
+    /* 侧边栏在左侧，内容正常流动，不会被遮挡 */
+
+    /* Section 间距和动画 */
+    .section {
+      padding: 4rem 1.5rem;
+      position: relative;
+      opacity: 0;
+      animation: fadeInSection 0.8s ease forwards;
+      scroll-margin-top: 80px; /* 为固定导航栏留出空间 */
+    }
+
+    @keyframes fadeInSection {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .section:nth-child(even) {
+      animation-delay: 0.1s;
+    }
+
+    .section:nth-child(odd) {
+      animation-delay: 0.2s;
+    }
+
+    /* Section 标题优化 */
+    .section .title.is-2 {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding-bottom: 1rem;
+      margin-bottom: 1.5rem;
+      text-align: left;
+    }
+
+    .section .title.is-2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      border-radius: 2px;
+    }
+
+    .section .title.is-2 .toc-icon {
+      font-size: 1.5rem;
+      color: var(--primary-color);
+      flex-shrink: 0;
+    }
+
+    /* 如果标题需要居中，可以添加 has-text-centered 类 */
+    .section .title.is-2.has-text-centered::after {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    /* 卡片进入动画 */
+    .method-phase-card,
+    .stat-card,
+    .analysis-card,
+    .contribution-card {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: slideInUp 0.6s ease forwards;
+    }
+
+    .method-phase-card:nth-child(1) { animation-delay: 0.1s; }
+    .method-phase-card:nth-child(2) { animation-delay: 0.2s; }
+    .method-phase-card:nth-child(3) { animation-delay: 0.3s; }
+    .method-phase-card:nth-child(4) { animation-delay: 0.4s; }
+
+    @keyframes slideInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* 图片hover效果 */
+    img {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* 可点击放大的图片 */
+    img.zoomable,
+    img[src*="image_danqing"],
+    img[src*="image_uniMEv2"] {
+      cursor: zoom-in;
+    }
+
+    img.zoomable:hover,
+    img[src*="image_danqing"]:hover,
+    img[src*="image_uniMEv2"]:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    /* 排除logo和图标 */
+    img[src*="logo"],
+    img[src*="icon"],
+    .no-zoom {
+      cursor: default !important;
+    }
+
+    img[src*="logo"]:hover,
+    img[src*="icon"]:hover,
+    .no-zoom:hover {
+      transform: none !important;
+    }
+
+    /* 图片模态框 */
+    #image-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      backdrop-filter: blur(5px);
+    }
+
+    #image-modal.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    #image-modal-content {
+      position: relative;
+      max-width: 90%;
+      max-height: 90%;
+      margin: auto;
+      animation: zoomIn 0.3s ease;
+    }
+
+    @keyframes zoomIn {
+      from {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    #image-modal img {
+      max-width: 100%;
+      max-height: 90vh;
+      width: auto;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      cursor: default;
+    }
+
+    #image-modal img:hover {
+      transform: none;
+    }
+
+    #image-modal-close {
+      position: absolute;
+      top: -40px;
+      right: 0;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    #image-modal-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: rotate(90deg);
+    }
+
+    #image-modal-caption {
+      position: absolute;
+      bottom: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      text-align: center;
+      font-size: 1rem;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      max-width: 80%;
+    }
+
+    @media (max-width: 768px) {
+      #image-modal-content {
+        max-width: 95%;
+        max-height: 85%;
+      }
+
+      #image-modal img {
+        max-height: 85vh;
+      }
+
+      #image-modal-close {
+        top: -35px;
+        width: 35px;
+        height: 35px;
+        font-size: 1.2rem;
+      }
+
+      #image-modal-caption {
+        bottom: -40px;
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
+      }
+    }
+
+    /* 表格行动画 */
+    .table tbody tr {
+      transition: all 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+      transform: scale(1.01);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 按钮增强 */
+    .button {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .button::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .button:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    /* 改进的tabs交互 */
+    .tabs li a {
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .tabs li a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%) scaleX(0);
+      width: 80%;
+      height: 3px;
+      background: var(--primary-color);
+      transition: transform 0.3s ease;
+    }
+
+    .tabs li.is-active a::after {
+      transform: translateX(-50%) scaleX(1);
+    }
+
+    /* 改进的footer */
+    .footer {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: #f8fafc;
+      padding: 3rem 1.5rem;
+      margin-top: 4rem;
+    }
+
+    .footer a {
+      color: var(--secondary-color);
+      transition: color 0.2s;
+    }
+
+    .footer a:hover {
+      color: var(--primary-color);
+    }
+
+    /* 响应式优化 */
+    @media (max-width: 768px) {
+      .section {
+        padding: 3rem 1rem;
+      }
+
+      #back-to-top {
+        bottom: 1rem;
+        right: 1rem;
+        width: 45px;
+        height: 45px;
+      }
+
+      .hero-custom {
+        padding: 3rem 1rem;
+      }
+    }
+  </style>
+
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+<body>
+  <!-- 滚动进度条 -->
+  <div id="scroll-progress"></div>
+
+  <!-- 返回顶部按钮 -->
+  <button id="back-to-top" aria-label="返回顶部">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
+  <!-- 图片模态框 -->
+  <div id="image-modal">
+    <div id="image-modal-content">
+      <button id="image-modal-close" aria-label="关闭">
+        <i class="fas fa-times"></i>
+      </button>
+      <img id="modal-image" src="" alt="">
+      <div id="image-modal-caption"></div>
+    </div>
+  </div>
+
+  <section class="hero-custom has-text-centered">
+    <div class="container is-max-desktop">
+      <h1 class="publication-title" style="display: flex; align-items: center; justify-content: center; gap: 1.25rem; flex-wrap: wrap; text-align: center;">
+        <img src="static/image_danqing/logo/danqing_logo.png" style="height: 3.5rem; width: auto; flex-shrink: 0; display: block; order: -1;" alt="DanQing Logo">
+        <span style="flex: 1; min-width: 500px; text-align: center;">
+          DanQing: An Up-to-Date Large-Scale Chinese Vision-Language Pre-training Dataset
+        </span>
+      </h1>
+
+      <div class="publication-authors">
+        <span class="author-block"><a href="">Hengyu Shen</a><sup>1,2*</sup></span>
+        <span class="author-separator">•</span>
+        <span class="author-block"><a href="https://scholar.google.com/citations?hl=zh-CN&user=9etrpbYAAAAJ">Tiancheng Gu</a><sup>1,3*</sup></span>
+        <span class="author-separator">•</span>
+        <span class="author-block"><a href="">Bin Qin</a><sup>1</sup></span>
+        <span class="author-separator">•</span>
+        <span class="author-block"><a href="">Lan Wu</a><sup>1</sup></span>
+        <span class="author-separator">•</span>
+        <span class="author-block"><a href="">Yuling Wu</a><sup>1</sup></span>
+        <span class="author-separator">•</span>
+        <span class="author-block"><a href="">Shuo Tan</a><sup>1,2</sup></span>
+        <span class="author-separator">•</span>
+        <span class="author-block"><a href="https://scholar.google.com/citations?user=mDxuGMgAAAAJ&hl=zh-CN">Zelong Sun</a><sup>1,4</sup></span>
+        <!-- <span class="author-separator">•</span> -->
+        <span class="author-block"><a href="">Jun Wang</a><sup>1</sup></span>
+        <span class="author-separator">•</span>
+        <span class="author-block"><a href="">Nan Wu</a><sup>1</sup></span>
+        <span class="author-separator">•</span>
+        <span class="author-block"><a href="https://scholar.google.com/citations?user=1ckaPgwAAAAJ&hl=zh-CN">Xiang An</a><sup>1</sup></span>
+        <span class="author-separator">•</span>
+        <span class="author-block"><a href="https://scholar.google.com/citations?user=N8qTc2AAAAAJ&hl=zh-CN">Weidong Cai</a><sup>3</sup></span>
+        <span class="author-separator">•</span>
+        <span class="author-block"><a href="https://scholar.google.com/citations?user=xlKttUEAAAAJ&hl=zh-CN">Ziyong Feng</a><sup>1</sup></span>
+        <span class="author-separator">•</span>
+        <span class="author-block"><a href="https://scholar.google.com/citations?user=AQMkoXIAAAAJ&hl=zh-CN">Kaicheng Yang</a><sup>1†</sup></span>
+      </div>
+
+      <div class="is-size-6" style="margin-top: 1rem; color: #64748b;">
+        <sup>1</sup>DeepGlint Inc. &nbsp; <sup>2</sup>BIT &nbsp; <sup>3</sup>USYD &nbsp; <sup>4</sup>RUC
+        <br>
+        <strong>*Equal contribution &nbsp; †Corresponding author</strong>
+      </div>
+      
+      <div class="column has-text-centered" style="margin-top: 1rem;">
+        <div class="publication-links-wrapper">
+          <div class="publication-links">
+            <a href="#" class="link-card" target="_blank">
+              <div class="link-card-icon">
+                <i class="ai ai-arxiv"></i>
+              </div>
+              <span class="link-card-text"><b>Paper</b></span>
+              <div class="link-card-arrow">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 4H12M12 12V4M12 4L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                </svg>
+              </div>
+            </a>
+            <a href="https://github.com/deepglint/DanQing" class="link-card" target="_blank">
+              <div class="link-card-icon">
+                <i class="fab fa-github"></i>
+              </div>
+              <span class="link-card-text"><b>Code</b></span>
+              <div class="link-card-arrow">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 4H12M12 12V4M12 4L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                </svg>
+              </div>
+            </a>
+            <a href="https://huggingface.co/datasets/DeepGlint-AI/DanQing100M" class="link-card" target="_blank">
+              <div class="link-card-icon">
+                <span style="font-size: 1.25rem;">🤗</span>
+              </div>
+              <span class="link-card-text"><b>Dataset (HuggingFace)</b></span>
+              <div class="link-card-arrow">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 4H12M12 12V4M12 4L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                </svg>
+              </div>
+            </a>
+            <a href="https://www.modelscope.cn/datasets/deepglint/DanQing" class="link-card" target="_blank">
+              <div class="link-card-icon">
+                <img src="static/image_danqing/logo/modelscope.png" alt="ModelScope" loading="lazy">
+              </div>
+              <span class="link-card-text"><b>Dataset (ModelScope)</b> <span style="margin-left: 0.25rem; font-size: 1rem;">👍</span></span>
+              <div class="link-card-arrow">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 4H12M12 12V4M12 4L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                </svg>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Table of Contents - Fixed Sidebar -->
+  <div class="table-of-contents">
+    <h2 class="toc-title">Catalogue</h2>
+    <div class="toc-grid">
+      <a href="#introduction" class="toc-item" data-section="introduction">
+        <i class="fas fa-book-open toc-icon"></i>
+        <span class="toc-item-text">Introduction</span>
+      </a>
+      <a href="#pipeline" class="toc-item" data-section="pipeline">
+        <i class="fas fa-cogs toc-icon"></i>
+        <span class="toc-item-text">Data Construction Pipeline</span>
+      </a>
+      <a href="#statistics" class="toc-item" data-section="statistics">
+        <i class="fas fa-chart-bar toc-icon"></i>
+        <span class="toc-item-text">Statistics of Dataset</span>
+      </a>
+      <a href="#results" class="toc-item" data-section="results">
+        <i class="fas fa-trophy toc-icon"></i>
+        <span class="toc-item-text">Main Results</span>
+      </a>
+      <a href="#analysis" class="toc-item" data-section="analysis">
+        <i class="fas fa-microscope toc-icon"></i>
+        <span class="toc-item-text">Analysis</span>
+      </a>
+      <a href="#bibtex" class="toc-item" data-section="bibtex">
+        <i class="fas fa-quote-right toc-icon"></i>
+        <span class="toc-item-text">BibTeX</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- TOC Toggle Button (Mobile) -->
+  <button class="toc-toggle-btn" aria-label="Toggle Table of Contents" title="目录">
+    <i class="fas fa-list"></i>
+  </button>
+
+  <section id="introduction" class="section" style="padding-top: 1.5rem;">
+    <div class="container is-max-desktop">
+      <h2 class="title is-2" style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+        <i class="fas fa-book-open toc-icon"></i>
+        <span>Introduction</span>
+      </h2>
+
+      <div class="columns is-vcentered" style="margin-bottom: 0;">
+        <!-- Left: Table -->
+        <div class="column is-5">
+          <h3 class="title is-6 has-text-centered" style="margin-bottom: 0.75rem; font-size: 0.9rem;">Overview of Existing VLP Datasets</h3>
+          <div class="table-wrapper intro-table-wrapper">
+            <table class="table is-fullwidth is-hoverable" style="font-size: 0.7rem;">
+              <thead>
+                <tr>
+                  <th style="text-align: left;">Dataset</th>
+                  <th style="text-align: center;">Year</th>
+                  <th style="text-align: center;">Lang</th>
+                  <th style="text-align: center;">Avail</th>
+                  <th style="text-align: center;">Size</th>
+                  <th style="text-align: center;">Rate</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>CC3M</td>
+                  <td style="text-align: center;">2018</td>
+                  <td style="text-align: center;">EN</td>
+                  <td style="text-align: center;">Yes</td>
+                  <td style="text-align: center;">3.1M</td>
+                  <td style="text-align: center;">≈60%</td>
+                </tr>
+                <tr>
+                  <td>CC12M</td>
+                  <td style="text-align: center;">2021</td>
+                  <td style="text-align: center;">EN</td>
+                  <td style="text-align: center;">Yes</td>
+                  <td style="text-align: center;">12M</td>
+                  <td style="text-align: center;">≈60%</td>
+                </tr>
+                <tr>
+                  <td>RedCaps</td>
+                  <td style="text-align: center;">2021</td>
+                  <td style="text-align: center;">EN</td>
+                  <td style="text-align: center;">Yes</td>
+                  <td style="text-align: center;">12M</td>
+                  <td style="text-align: center;">-</td>
+                </tr>
+                <tr>
+                  <td>WIT</td>
+                  <td style="text-align: center;">2021</td>
+                  <td style="text-align: center;">Multi</td>
+                  <td style="text-align: center;">Yes</td>
+                  <td style="text-align: center;">11.5M</td>
+                  <td style="text-align: center;">-</td>
+                </tr>
+                <tr>
+                  <td>YFCC100M</td>
+                  <td style="text-align: center;">2014</td>
+                  <td style="text-align: center;">EN</td>
+                  <td style="text-align: center;">Yes</td>
+                  <td style="text-align: center;">100M</td>
+                  <td style="text-align: center;">≈70%</td>
+                </tr>
+                <tr>
+                  <td>COYO</td>
+                  <td style="text-align: center;">2022</td>
+                  <td style="text-align: center;">EN</td>
+                  <td style="text-align: center;">Yes</td>
+                  <td style="text-align: center;">700M</td>
+                  <td style="text-align: center;">-</td>
+                </tr>
+                <tr>
+                  <td>LAION-400M</td>
+                  <td style="text-align: center;">2021</td>
+                  <td style="text-align: center;">EN</td>
+                  <td style="text-align: center;">Yes</td>
+                  <td style="text-align: center;">400M</td>
+                  <td style="text-align: center;">-</td>
+                </tr>
+                <tr>
+                  <td>RealSyn</td>
+                  <td style="text-align: center;">2025</td>
+                  <td style="text-align: center;">EN</td>
+                  <td style="text-align: center;">Yes</td>
+                  <td style="text-align: center;">100M</td>
+                  <td style="text-align: center;">-</td>
+                </tr>
+                <tr>
+                  <td>Product1M</td>
+                  <td style="text-align: center;">2021</td>
+                  <td style="text-align: center;">CN</td>
+                  <td style="text-align: center;">Yes</td>
+                  <td style="text-align: center;">1M</td>
+                  <td style="text-align: center;">-</td>
+                </tr>
+                <tr>
+                  <td>WudaoMM</td>
+                  <td style="text-align: center;">2022</td>
+                  <td style="text-align: center;">CN</td>
+                  <td style="text-align: center;">Yes</td>
+                  <td style="text-align: center;">5M</td>
+                  <td style="text-align: center;">-</td>
+                </tr>
+                <tr>
+                  <td>M6-Corpus</td>
+                  <td style="text-align: center;">2021</td>
+                  <td style="text-align: center;">CN</td>
+                  <td style="text-align: center;">No</td>
+                  <td style="text-align: center;">60.5M</td>
+                  <td style="text-align: center;">-</td>
+                </tr>
+                <tr>
+                  <td>Wukong</td>
+                  <td style="text-align: center;">2022</td>
+                  <td style="text-align: center;">CN</td>
+                  <td style="text-align: center;">Yes</td>
+                  <td style="text-align: center;">100M</td>
+                  <td style="text-align: center;">≈85%</td>
+                </tr>
+                <tr>
+                  <td>TaiSu</td>
+                  <td style="text-align: center;">2022</td>
+                  <td style="text-align: center;">CN</td>
+                  <td style="text-align: center;">Yes</td>
+                  <td style="text-align: center;">166M</td>
+                  <td style="text-align: center;">≈100%</td>
+                </tr>
+                <tr>
+                  <td>Zero</td>
+                  <td style="text-align: center;">2022</td>
+                  <td style="text-align: center;">CN</td>
+                  <td style="text-align: center;">Yes</td>
+                  <td style="text-align: center;">250M</td>
+                  <td style="text-align: center;">≈60%</td>
+                </tr>
+                <tr class="table-row-danqing">
+                  <td><strong>DanQing</strong></td>
+                  <td style="text-align: center;"><strong>2025</strong></td>
+                  <td style="text-align: center;"><strong>CN</strong></td>
+                  <td style="text-align: center;"><strong>Yes</strong></td>
+                  <td style="text-align: center;"><strong>100M</strong></td>
+                  <td style="text-align: center;"><strong>≈100%</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Right: Text Content -->
+        <div class="column is-7">
+          <div class="content" style="font-size: 0.9rem; line-height: 1.6;">
+            <!-- <p style="margin-bottom: 1rem;">
+              VLP models like <strong>CLIP</strong> succeed through <strong>advanced architectures</strong> and <strong>large-scale data</strong>. 
+              While English datasets (LAION, COYO) flourish, Chinese multimodal data remains stagnant.
+            </p> -->
+
+            <div class="intro-problem-box" style="padding: 0.875rem; margin: 0.75rem 0;">
+              <h4 class="title is-6" style="font-size: 0.95rem; margin-bottom: 0.5rem;">Motivation</h4>
+              <p style="font-size: 0.85rem; margin-bottom: 0.5rem;">
+                Existing Chinese datasets (Zero, Wukong) are <strong>3+ years old</strong> with two critical issues:
+              </p>
+              <ul style="font-size: 0.85rem; margin-left: 1rem; margin-top: 0.5rem;">
+                <li style="margin-bottom: 0.25rem;"><strong>Temporal Irrelevance:</strong> Missing contemporary concepts</li>
+                <li style="margin-bottom: 0;"><strong>Dead Links:</strong> High proportion of invalid image URLs</li>
+              </ul>
+            </div>
+
+            <div class="intro-solution-box" style="padding: 1rem; margin: 0.75rem 0;">
+              <h4 class="title is-5" style="font-size: 1.05rem; margin-bottom: 0.625rem;">DanQing: A Modern Solution</h4>
+              <p style="font-size: 0.85rem; margin-bottom: 0.875rem;">
+                <strong>DanQing</strong> provides <strong>~100M image-text pairs</strong> from <strong>2024-2025 web data</strong>.
+              </p>
+              
+              <div style="display: flex; flex-direction: column; gap: 0.625rem;">
+                <div style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                  <span style="color: var(--primary-color); font-weight: bold; flex-shrink: 0;">1.</span>
+                  <div>
+                    <strong style="font-size: 0.9rem;">Rigorous Filtration:</strong>
+                    <span style="font-size: 0.85rem;"> Filters out <strong>90%</strong> of raw data for high quality.</span>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                  <span style="color: var(--primary-color); font-weight: bold; flex-shrink: 0;">2.</span>
+                  <div>
+                    <strong style="font-size: 0.9rem;">Up-to-Date Semantics:</strong>
+                    <span style="font-size: 0.85rem;"> Captures <strong>evolving trends</strong> and modern concepts.</span>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                  <span style="color: var(--primary-color); font-weight: bold; flex-shrink: 0;">3.</span>
+                  <div>
+                    <strong style="font-size: 0.9rem;">SOTA Performance:</strong>
+                    <span style="font-size: 0.85rem;"> Outperforms in <strong>zero-shot classification, retrieval, and LMM reasoning</strong>.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="intro-conclusion-box" style="padding: 0.875rem; margin: 0.75rem 0;">
+              <p style="margin: 0; font-size: 0.85rem;">
+                Open-sourced under <strong>CC-BY 4.0 license</strong>: providing a foundation for next-generation Chinese AI models.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pipeline" class="section" style="background-color: #f8fafc;">
+    <div class="container is-max-desktop">
+      <h2 class="title is-2" style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+        <i class="fas fa-cogs toc-icon"></i>
+        <span>Data Construction Pipeline</span>
+      </h2>
+      
+      <!-- Method Overview Image -->
+      <div class="has-text-centered" style="margin-bottom: 3rem;">
+        <img src="static/image_danqing/method.jpg" style="width: 100%; max-width: 900px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+      </div>
+
+      <!-- Timeline -->
+      <div class="timeline-container">
+        <div class="timeline-line"></div>
+        
+        <!-- Phase 1 -->
+        <div class="timeline-item active" data-phase="1">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content-wrapper">
+            <div class="timeline-content">
+              <div class="timeline-header">
+                <div class="timeline-header-left">
+                  <span class="timeline-number">1</span>
+                  <h3 class="timeline-title">Data Collection</h3>
+                </div>
+                <div class="timeline-toggle">
+                  <i class="fas fa-chevron-down"></i>
+                </div>
+              </div>
+              <div class="timeline-body">
+                <p class="timeline-body-content">
+                  Raw data from <strong>Common Crawl (2024-2025)</strong> processed in <strong>7 parallel batches</strong>, 
+                  filtered by "zho" language tag yields <strong>1.05B initial pairs</strong>. Three coarse-grained filters 
+                  are applied: <strong>Content Safety</strong> (1M-parameter binary classifier), 
+                  <strong>Textual Constraints</strong> (5-60 words), and <strong>Source Reliability</strong> (blacklist exclusion). 
+                  This yields <strong>706M candidate pairs</strong> (67% retention). After image downloading with 67% success rate, 
+                  we obtain <strong>475M high-quality pairs</strong>.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 2 -->
+        <div class="timeline-item" data-phase="2">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content-wrapper">
+            <div class="timeline-content">
+              <div class="timeline-header">
+                <div class="timeline-header-left">
+                  <span class="timeline-number">2</span>
+                  <h3 class="timeline-title">Textual-Level Purification & Filtering</h3>
+                </div>
+                <div class="timeline-toggle">
+                  <i class="fas fa-chevron-down"></i>
+                </div>
+              </div>
+              <div class="timeline-body">
+                <p class="timeline-body-content">
+                  Four-stage refinement pipeline: <strong>Linguistic Structure</strong> (Chinese identification and 
+                  Simplified Chinese standardization), <strong>Text Quality</strong> (requires nouns, ≤5 [UNK] tokens), 
+                  <strong>Information Density</strong> (entropy-based filter H ≥ 6e-4), and 
+                  <strong>Safety</strong> (NSFW detection and sensitive content filtering). 
+                  Reduces corpus from <strong>475M to 397M pairs</strong> (16.4% reduction), significantly enhancing signal-to-noise ratio.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 3 -->
+        <div class="timeline-item" data-phase="3">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content-wrapper">
+            <div class="timeline-content">
+              <div class="timeline-header">
+                <div class="timeline-header-left">
+                  <span class="timeline-number">3</span>
+                  <h3 class="timeline-title">Image-Level Filtration</h3>
+                </div>
+                <div class="timeline-toggle">
+                  <i class="fas fa-chevron-down"></i>
+                </div>
+              </div>
+              <div class="timeline-body">
+                <p class="timeline-body-content">
+                  Multi-stage filtering across four dimensions: <strong>Visual Fidelity</strong> (aspect ratio 1:3-3:1, 
+                  shortest edge >100px, pixel intensity σ ≥ 2, Laplacian variance ≥ 1000 for blur detection), 
+                  <strong>Information Density</strong> (image entropy H ≥ 3), <strong>Image Redundancy</strong> 
+                  (Union-Find clustering with distance threshold β=0.1, retaining one representative per cluster), 
+                  and <strong>Content Safety</strong> (86M-parameter NSFW detector). 
+                  Reduces dataset from <strong>397M to 178M pairs</strong> (44.8% retention).
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 4 -->
+        <div class="timeline-item" data-phase="4">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content-wrapper">
+            <div class="timeline-content">
+              <div class="timeline-header">
+                <div class="timeline-header-left">
+                  <span class="timeline-number">4</span>
+                  <h3 class="timeline-title">Cross-Modality Filtration</h3>
+                </div>
+                <div class="timeline-toggle">
+                  <i class="fas fa-chevron-down"></i>
+                </div>
+              </div>
+              <div class="timeline-body">
+                <p class="timeline-body-content">
+                  <strong>Chinese-CLIP-L14</strong> computes image-text similarity scores. 
+                  Pairs within interval <strong>[1.06, 1.24]</strong> are retained: scores below 1.06 indicate 
+                  weak semantic correlation, while those exceeding 1.24 often correspond to OCR-heavy images. 
+                  Prunes <strong>25M pairs</strong>, culminating in approximately <strong>100M high-quality image-text pairs</strong>.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 5: Final Result -->
+        <div class="timeline-item result-step" data-phase="5">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content-wrapper">
+            <div class="timeline-content">
+              <div class="timeline-header">
+                <div class="timeline-header-left">
+                  <span class="timeline-number">5</span>
+                  <h3 class="timeline-title">Final Result</h3>
+                </div>
+                <div class="timeline-toggle">
+                  <i class="fas fa-chevron-down"></i>
+                </div>
+              </div>
+              <div class="timeline-body">
+                <p class="timeline-body-content">
+                  A curated collection of <strong>~100M pairs</strong> 
+                  (<strong>10TB</strong> storage), ready for state-of-the-art vision-language pre-training.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Statistics Section -->
+  <section id="statistics" class="section">
+    <div class="container is-max-desktop">
+      <h2 class="title is-2" style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+        <i class="fas fa-chart-bar toc-icon"></i>
+        <span>Statistics of Dataset</span>
+      </h2>
+      
+      <!-- Data Characteristics -->
+      <div style="margin-bottom: 3rem;">
+        <h3 class="title is-4 has-text-centered" style="margin-bottom: 2rem;">Data Characteristics</h3>
+        
+        <div class="columns is-multiline">
+          <!-- Image Resolution -->
+          <div class="column is-6">
+            <div class="stat-card">
+              <div class="has-text-centered" style="margin-bottom: 1rem;">
+                <img src="static/image_danqing/statistics/image_resolution_distribution.jpg" 
+                     alt="Image Resolution Distribution" 
+                     style="width: 100%; max-width: 500px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              </div>
+              <h4 class="title is-6" style="margin-bottom: 0.75rem;">Image Resolution</h4>
+              <p class="stat-content">
+                Broad spectrum of visual scales: most images within <strong>300-500 pixels</strong>, 
+                with considerable proportion exceeding <strong>1,024 pixels</strong>. This wide coverage 
+                supports robust, scale-invariant features for vision-language learning.
+              </p>
+            </div>
+          </div>
+
+          <!-- Text Length -->
+          <div class="column is-6">
+            <div class="stat-card">
+              <div class="has-text-centered" style="margin-bottom: 1rem;">
+                <img src="static/image_danqing/statistics/text_length_distribution.jpg" 
+                     alt="Text Length Distribution" 
+                     style="width: 100%; max-width: 500px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              </div>
+              <h4 class="title is-6" style="margin-bottom: 0.75rem;">Text Length Distribution</h4>
+              <p class="stat-content">
+                Total <strong>2.2B Chinese words</strong> with average <strong>22 words per sample</strong>. 
+                Distribution spans <strong>5-60 tokens</strong>, majority between <strong>6-40</strong>, 
+                with samples at both extremes for semantic richness.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Topic Modeling -->
+      <div>
+        <h3 class="title is-4 has-text-centered" style="margin-bottom: 2rem;">Topic Modeling</h3>
+        
+        <div class="topic-modeling-container">
+          <div class="has-text-centered" style="margin-bottom: 1.5rem;">
+            <img src="static/image_danqing/topic_example_main.jpg" 
+                 alt="Topic Modeling Visualization" 
+                 style="width: 100%; max-width: 900px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+          </div>
+          
+          <div class="topic-analysis-box">
+            <p class="topic-content">
+              We analyze semantic diversity using <strong>BERTopic</strong> on 10M randomly sampled pairs. 
+              Text embeddings from <strong>Chinese-CLIP-L/14</strong> are reduced via <strong>UMAP</strong> 
+              and clustered with <strong>HDBSCAN</strong> (min cluster size: 1,000). Six prevalent topics 
+              span fashion, technology, cuisine, and more, indicating <strong>wide real-world domain coverage</strong> 
+              for robust vision-language representation learning.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="results" class="section">
+    <div class="container is-max-desktop">
+      <h2 class="title is-2" style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+        <i class="fas fa-trophy toc-icon"></i>
+        <span>Main Results</span>
+      </h2>
+      
+      <div class="has-text-centered">
+        <div class="tabs-container">
+          <div class="tabs is-toggle is-rounded">
+            <ul>
+              <li class="is-active" data-target="tab-classification"><a>Zero-shot Classification</a></li>
+              <li data-target="tab-shortRetrieval"><a>Short-Caption Retrieval</a></li>
+              <li data-target="tab-longRetrieval"><a>Long-Caption Retrieval</a></li>
+              <li data-target="tab-mllmDownstream"><a>MLLM Downstream</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-classification" class="anchor-content is-active">
+        <div class="table-wrapper" style="overflow-x: auto;">
+          <table class="table is-fullwidth is-hoverable" style="font-size: 0.85rem;">
+            <thead>
+              <tr>
+                <th style="text-align: left;">Dataset</th>
+                <th class="table-header-rotate">Caltech101</th>
+                <th class="table-header-rotate">CIFAR10</th>
+                <th class="table-header-rotate">Country211</th>
+                <th class="table-header-rotate">DTD</th>
+                <th class="table-header-rotate">Food101</th>
+                <th class="table-header-rotate">MNIST</th>
+                <th class="table-header-rotate">Flowers</th>
+                <th class="table-header-rotate">Pets</th>
+                <th class="table-header-rotate">RESISC45</th>
+                <th class="table-header-rotate">Cars</th>
+                <th class="table-header-rotate">Memes</th>
+                <th class="table-header-rotate">VOC2007</th>
+                <th class="table-header-rotate">Avg.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Model Architecture: SigLIP2-B/32@256 -->
+              <tr>
+                <td colspan="14" class="table-model-section" style="text-align: center;">Model Architecture: SigLIP2-B/32@256</td>
+              </tr>
+              <tr>
+                <td class="table-baseline">Baseline</td>
+                <td class="table-baseline">77.0</td>
+                <td class="table-baseline">85.1</td>
+                <td class="table-baseline">8.2</td>
+                <td class="table-baseline">35.9</td>
+                <td class="table-baseline">55.1</td>
+                <td class="table-baseline">81.9</td>
+                <td class="table-baseline">37.6</td>
+                <td class="table-baseline">61.9</td>
+                <td class="table-baseline">56.3</td>
+                <td class="table-baseline">76.3</td>
+                <td class="table-baseline">49.4</td>
+                <td class="table-baseline">69.0</td>
+                <td class="table-baseline">57.8</td>
+              </tr>
+              <tr>
+                <td>Wukong</td>
+                <td>78.6</td>
+                <td>91.7</td>
+                <td>9.5</td>
+                <td>42.6</td>
+                <td>61.2</td>
+                <td>83.0</td>
+                <td class="table-second">61.4</td>
+                <td>71.3</td>
+                <td>58.1</td>
+                <td class="table-second">75.1</td>
+                <td>53.8</td>
+                <td>75.6</td>
+                <td>63.5</td>
+              </tr>
+              <tr>
+                <td>Zero<sup>*</sup></td>
+                <td class="table-second">79.3</td>
+                <td class="table-second">92.2</td>
+                <td class="table-best">10.8</td>
+                <td class="table-second">45.1</td>
+                <td class="table-second">64.7</td>
+                <td class="table-best">86.3</td>
+                <td class="table-best">63.2</td>
+                <td class="table-second">76.7</td>
+                <td class="table-second">58.9</td>
+                <td>74.5</td>
+                <td>49.6</td>
+                <td class="table-best">77.3</td>
+                <td class="table-second">64.9</td>
+              </tr>
+              <tr>
+                <td>TaiSu<sup>*</sup></td>
+                <td>78.5</td>
+                <td>90.9</td>
+                <td>5.7</td>
+                <td>43.5</td>
+                <td>53.6</td>
+                <td class="table-second">83.5</td>
+                <td>52.4</td>
+                <td>62.9</td>
+                <td>53.3</td>
+                <td>58.9</td>
+                <td class="table-second">54.0</td>
+                <td class="table-best">77.3</td>
+                <td>59.5</td>
+              </tr>
+              <tr class="table-row-danqing">
+                <td><strong>DanQing</strong></td>
+                <td class="table-best">79.7</td>
+                <td class="table-best">93.0</td>
+                <td class="table-second">9.9</td>
+                <td class="table-best">46.4</td>
+                <td class="table-best">66.6</td>
+                <td>83.4</td>
+                <td>58.5</td>
+                <td class="table-best">78.7</td>
+                <td class="table-best">61.4</td>
+                <td class="table-best">76.0</td>
+                <td class="table-best">54.4</td>
+                <td class="table-second">77.1</td>
+                <td class="table-best">65.4</td>
+              </tr>
+              
+              <!-- Model Architecture: SigLIP2-B/16@256 -->
+              <tr>
+                <td colspan="14" class="table-model-section" style="text-align: center;">Model Architecture: SigLIP2-B/16@256</td>
+              </tr>
+              <tr>
+                <td class="table-baseline">Baseline</td>
+                <td class="table-baseline">77.3</td>
+                <td class="table-baseline">85.4</td>
+                <td class="table-baseline">10.7</td>
+                <td class="table-baseline">35.3</td>
+                <td class="table-baseline">60.8</td>
+                <td class="table-baseline">83.9</td>
+                <td class="table-baseline">38.1</td>
+                <td class="table-baseline">65.0</td>
+                <td class="table-baseline">59.8</td>
+                <td class="table-baseline">81.0</td>
+                <td class="table-baseline">51.0</td>
+                <td class="table-baseline">71.0</td>
+                <td class="table-baseline">59.9</td>
+              </tr>
+              <tr>
+                <td>Wukong</td>
+                <td>78.4</td>
+                <td>90.3</td>
+                <td>12.7</td>
+                <td>44.8</td>
+                <td>68.7</td>
+                <td>81.5</td>
+                <td class="table-second">63.6</td>
+                <td>76.0</td>
+                <td>59.0</td>
+                <td class="table-second">80.8</td>
+                <td class="table-best">55.0</td>
+                <td>78.4</td>
+                <td>65.8</td>
+              </tr>
+              <tr>
+                <td>Zero<sup>*</sup></td>
+                <td class="table-second">79.5</td>
+                <td class="table-second">91.3</td>
+                <td class="table-best">13.9</td>
+                <td class="table-second">45.6</td>
+                <td class="table-second">70.5</td>
+                <td class="table-best">84.6</td>
+                <td class="table-best">65.5</td>
+                <td class="table-second">78.9</td>
+                <td class="table-second">60.6</td>
+                <td>80.2</td>
+                <td>51.0</td>
+                <td>79.0</td>
+                <td class="table-second">66.7</td>
+              </tr>
+              <tr>
+                <td>TaiSu<sup>*</sup></td>
+                <td>78.6</td>
+                <td>89.3</td>
+                <td>7.0</td>
+                <td>44.6</td>
+                <td>58.1</td>
+                <td>82.2</td>
+                <td>54.3</td>
+                <td>65.9</td>
+                <td>55.8</td>
+                <td>62.1</td>
+                <td class="table-second">54.2</td>
+                <td class="table-second">79.2</td>
+                <td>60.9</td>
+              </tr>
+              <tr class="table-row-danqing">
+                <td><strong>DanQing</strong></td>
+                <td class="table-best">80.2</td>
+                <td class="table-best">93.2</td>
+                <td class="table-second">13.3</td>
+                <td class="table-best">48.0</td>
+                <td class="table-best">71.6</td>
+                <td class="table-second">83.5</td>
+                <td>62.2</td>
+                <td class="table-best">81.8</td>
+                <td class="table-best">63.5</td>
+                <td class="table-best">81.7</td>
+                <td>53.2</td>
+                <td class="table-best">79.6</td>
+                <td class="table-best">67.7</td>
+              </tr>
+              
+              <!-- Model Architecture: SigLIP2-L/16@256 -->
+              <tr>
+                <td colspan="14" class="table-model-section" style="text-align: center;">Model Architecture: SigLIP2-L/16@256</td>
+              </tr>
+              <tr>
+                <td class="table-baseline">Baseline</td>
+                <td class="table-baseline">76.7</td>
+                <td class="table-baseline">88.5</td>
+                <td class="table-baseline">15.9</td>
+                <td class="table-baseline">44.8</td>
+                <td class="table-baseline">72.0</td>
+                <td class="table-baseline">80.8</td>
+                <td class="table-baseline">49.7</td>
+                <td class="table-baseline">84.3</td>
+                <td class="table-baseline">63.9</td>
+                <td class="table-baseline">87.4</td>
+                <td class="table-baseline">49.2</td>
+                <td class="table-baseline">68.9</td>
+                <td class="table-baseline">65.2</td>
+              </tr>
+              <tr>
+                <td>Wukong</td>
+                <td>80.3</td>
+                <td>96.1</td>
+                <td>20.5</td>
+                <td>48.2</td>
+                <td>78.3</td>
+                <td>84.9</td>
+                <td>74.3</td>
+                <td>84.5</td>
+                <td class="table-best">65.7</td>
+                <td>86.5</td>
+                <td>55.0</td>
+                <td>78.1</td>
+                <td>71.0</td>
+              </tr>
+              <tr>
+                <td>Zero<sup>*</sup></td>
+                <td class="table-second">82.4</td>
+                <td class="table-second">96.3</td>
+                <td class="table-best">22.6</td>
+                <td class="table-second">48.9</td>
+                <td class="table-second">81.9</td>
+                <td class="table-best">86.4</td>
+                <td class="table-best">75.9</td>
+                <td class="table-second">89.5</td>
+                <td class="table-second">65.3</td>
+                <td class="table-second">87.8</td>
+                <td>52.0</td>
+                <td class="table-second">79.7</td>
+                <td class="table-second">72.4</td>
+              </tr>
+              <tr>
+                <td>TaiSu<sup>*</sup></td>
+                <td>81.7</td>
+                <td>94.8</td>
+                <td>13.1</td>
+                <td>44.3</td>
+                <td>68.9</td>
+                <td>74.2</td>
+                <td>64.5</td>
+                <td>79.1</td>
+                <td>59.4</td>
+                <td>70.7</td>
+                <td class="table-second">55.6</td>
+                <td class="table-second">79.7</td>
+                <td>65.5</td>
+              </tr>
+              <tr class="table-row-danqing">
+                <td><strong>DanQing</strong></td>
+                <td class="table-best">83.5</td>
+                <td class="table-best">96.7</td>
+                <td class="table-second">22.4</td>
+                <td class="table-best">49.2</td>
+                <td class="table-best">83.8</td>
+                <td class="table-second">85.2</td>
+                <td class="table-second">75.0</td>
+                <td class="table-best">90.0</td>
+                <td>64.8</td>
+                <td class="table-best">88.7</td>
+                <td class="table-best">55.8</td>
+                <td class="table-best">79.9</td>
+                <td class="table-best">72.9</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="notification is-light" style="margin-top: 1.5rem;">
+          Zero-shot image classification performance using models pretrained on different datasets. <sup>*</sup> indicates random sampling of 100 million image-text pairs. The best and second best scores are in <strong>boldface</strong> and <u>underlined</u>.
+        </div>
+      </div>
+      
+      <div id="tab-shortRetrieval" class="anchor-content">
+        <div class="table-wrapper" style="overflow-x: auto;">
+          <table class="table is-fullwidth is-hoverable" style="font-size: 0.8rem;">
+            <thead>
+              <tr>
+                <th rowspan="3" style="text-align: left; vertical-align: middle;">Dataset</th>
+                <th colspan="6" style="text-align: center;">Flickr30K-CN</th>
+                <th colspan="6" style="text-align: center;">MSCOCO-CN</th>
+                <th colspan="6" style="text-align: center;">MUGE</th>
+                <th rowspan="3" class="table-header-rotate" style="vertical-align: middle;">Avg.</th>
+              </tr>
+              <tr>
+                <th colspan="3" style="text-align: center;">Text → Image</th>
+                <th colspan="3" style="text-align: center;">Image → Text</th>
+                <th colspan="3" style="text-align: center;">Text → Image</th>
+                <th colspan="3" style="text-align: center;">Image → Text</th>
+                <th colspan="3" style="text-align: center;">Text → Image</th>
+                <th colspan="3" style="text-align: center;">Image → Text</th>
+              </tr>
+              <tr>
+                <th>R@1</th>
+                <th>R@5</th>
+                <th>R@10</th>
+                <th>R@1</th>
+                <th>R@5</th>
+                <th>R@10</th>
+                <th>R@1</th>
+                <th>R@5</th>
+                <th>R@10</th>
+                <th>R@1</th>
+                <th>R@5</th>
+                <th>R@10</th>
+                <th>R@1</th>
+                <th>R@5</th>
+                <th>R@10</th>
+                <th>R@1</th>
+                <th>R@5</th>
+                <th>R@10</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Model Architecture: SigLIP2-B/32@256 -->
+              <tr>
+                <td colspan="20" class="table-model-section" style="text-align: center;">Model Architecture: SigLIP2-B/32@256</td>
+              </tr>
+              <tr>
+                <td class="table-baseline">Baseline</td>
+                <td class="table-baseline">45.4</td>
+                <td class="table-baseline">71.2</td>
+                <td class="table-baseline">80.6</td>
+                <td class="table-baseline">67.7</td>
+                <td class="table-baseline">88.9</td>
+                <td class="table-baseline">94.6</td>
+                <td class="table-baseline">49.6</td>
+                <td class="table-baseline">77.2</td>
+                <td class="table-baseline">87.8</td>
+                <td class="table-baseline">51.8</td>
+                <td class="table-baseline">81.1</td>
+                <td class="table-baseline">90.9</td>
+                <td class="table-baseline">38.3</td>
+                <td class="table-baseline">61.7</td>
+                <td class="table-baseline">69.9</td>
+                <td class="table-baseline">35.3</td>
+                <td class="table-baseline">60.7</td>
+                <td class="table-baseline">69.8</td>
+                <td class="table-baseline">67.9</td>
+              </tr>
+              <tr>
+                <td>Wukong</td>
+                <td>49.8</td>
+                <td>75.8</td>
+                <td>83.7</td>
+                <td>68.2</td>
+                <td>89.8</td>
+                <td>95.6</td>
+                <td>54.4</td>
+                <td>81.6</td>
+                <td>90.7</td>
+                <td>56.5</td>
+                <td>84.8</td>
+                <td>83.2</td>
+                <td class="table-second">55.1</td>
+                <td>77.9</td>
+                <td class="table-best">85.1</td>
+                <td>44.0</td>
+                <td class="table-second">71.2</td>
+                <td>80.1</td>
+                <td>74.3</td>
+              </tr>
+              <tr>
+                <td>Zero<sup>*</sup></td>
+                <td>49.5</td>
+                <td>76.5</td>
+                <td>84.4</td>
+                <td>68.7</td>
+                <td>90.5</td>
+                <td>95.1</td>
+                <td>53.9</td>
+                <td>84.0</td>
+                <td>92.1</td>
+                <td>56.9</td>
+                <td>84.6</td>
+                <td>93.3</td>
+                <td>54.5</td>
+                <td>77.7</td>
+                <td class="table-second">84.9</td>
+                <td>42.1</td>
+                <td>69.4</td>
+                <td>78.5</td>
+                <td>74.3</td>
+              </tr>
+              <tr>
+                <td>TaiSu<sup>*</sup></td>
+                <td class="table-best">60.5</td>
+                <td class="table-best">84.2</td>
+                <td class="table-best">90.3</td>
+                <td class="table-best">77.8</td>
+                <td class="table-best">94.4</td>
+                <td class="table-best">97.2</td>
+                <td class="table-best">65.7</td>
+                <td class="table-best">90.7</td>
+                <td class="table-best">96.0</td>
+                <td class="table-best">65.5</td>
+                <td class="table-best">88.9</td>
+                <td class="table-second">94.5</td>
+                <td class="table-best">56.2</td>
+                <td class="table-best">78.2</td>
+                <td>84.7</td>
+                <td class="table-second">44.1</td>
+                <td class="table-second">71.2</td>
+                <td class="table-second">80.3</td>
+                <td class="table-best">78.9</td>
+              </tr>
+              <tr class="table-row-danqing">
+                <td><strong>DanQing</strong></td>
+                <td class="table-second">54.2</td>
+                <td class="table-second">79.0</td>
+                <td class="table-second">86.6</td>
+                <td class="table-second">73.0</td>
+                <td class="table-second">92.2</td>
+                <td class="table-second">96.3</td>
+                <td class="table-second">60.1</td>
+                <td class="table-second">84.5</td>
+                <td class="table-second">93.8</td>
+                <td class="table-second">61.0</td>
+                <td class="table-second">88.3</td>
+                <td class="table-best">96.3</td>
+                <td>54.8</td>
+                <td class="table-second">78.1</td>
+                <td class="table-second">84.9</td>
+                <td class="table-best">45.3</td>
+                <td class="table-best">72.1</td>
+                <td class="table-best">80.7</td>
+                <td class="table-second">76.7</td>
+              </tr>
+              
+              <!-- Model Architecture: SigLIP2-B/16@256 -->
+              <tr>
+                <td colspan="20" class="table-model-section" style="text-align: center;">Model Architecture: SigLIP2-B/16@256</td>
+              </tr>
+              <tr>
+                <td class="table-baseline">Baseline</td>
+                <td class="table-baseline">51.3</td>
+                <td class="table-baseline">76.6</td>
+                <td class="table-baseline">84.7</td>
+                <td class="table-baseline">73.5</td>
+                <td class="table-baseline">93.3</td>
+                <td class="table-baseline">96.7</td>
+                <td class="table-baseline">51.9</td>
+                <td class="table-baseline">79.7</td>
+                <td class="table-baseline">89.6</td>
+                <td class="table-baseline">54.7</td>
+                <td class="table-baseline">82.5</td>
+                <td class="table-baseline">91.9</td>
+                <td class="table-baseline">41.6</td>
+                <td class="table-baseline">64.6</td>
+                <td class="table-baseline">73.4</td>
+                <td class="table-baseline">38.9</td>
+                <td class="table-baseline">64.3</td>
+                <td class="table-baseline">73.5</td>
+                <td class="table-baseline">71.3</td>
+              </tr>
+              <tr>
+                <td>Wukong</td>
+                <td>56.5</td>
+                <td>81.8</td>
+                <td>88.4</td>
+                <td>74.8</td>
+                <td>94.2</td>
+                <td>97.8</td>
+                <td>57.5</td>
+                <td>83.3</td>
+                <td>92.0</td>
+                <td>61.0</td>
+                <td>86.0</td>
+                <td>93.7</td>
+                <td>60.1</td>
+                <td class="table-best">81.7</td>
+                <td class="table-best">87.7</td>
+                <td class="table-second">48.8</td>
+                <td class="table-second">75.3</td>
+                <td class="table-second">83.2</td>
+                <td>78.0</td>
+              </tr>
+              <tr>
+                <td>Zero<sup>*</sup></td>
+                <td>58.2</td>
+                <td>83.7</td>
+                <td>90.4</td>
+                <td>74.9</td>
+                <td>93.4</td>
+                <td>96.9</td>
+                <td>58.7</td>
+                <td>86.0</td>
+                <td class="table-second">94.4</td>
+                <td>60.0</td>
+                <td>84.8</td>
+                <td>93.1</td>
+                <td>59.6</td>
+                <td>80.8</td>
+                <td>86.8</td>
+                <td>46.2</td>
+                <td>72.9</td>
+                <td>81.3</td>
+                <td>77.9</td>
+              </tr>
+              <tr>
+                <td>TaiSu<sup>*</sup></td>
+                <td class="table-best">68.2</td>
+                <td class="table-best">89.0</td>
+                <td class="table-best">93.9</td>
+                <td class="table-best">83.8</td>
+                <td class="table-best">97.2</td>
+                <td class="table-best">99.4</td>
+                <td class="table-best">68.8</td>
+                <td class="table-best">93.0</td>
+                <td class="table-best">97.1</td>
+                <td class="table-best">67.1</td>
+                <td class="table-best">90.1</td>
+                <td class="table-second">95.9</td>
+                <td class="table-second">60.3</td>
+                <td>81.0</td>
+                <td>86.8</td>
+                <td>48.4</td>
+                <td>74.9</td>
+                <td>83.0</td>
+                <td class="table-best">82.1</td>
+              </tr>
+              <tr class="table-row-danqing">
+                <td><strong>DanQing</strong></td>
+                <td class="table-second">61.1</td>
+                <td class="table-second">84.9</td>
+                <td class="table-second">90.9</td>
+                <td class="table-second">80.6</td>
+                <td class="table-second">95.0</td>
+                <td class="table-second">97.9</td>
+                <td class="table-second">62.3</td>
+                <td class="table-second">86.6</td>
+                <td class="table-second">94.4</td>
+                <td class="table-second">64.7</td>
+                <td class="table-second">88.5</td>
+                <td class="table-best">96.1</td>
+                <td class="table-best">60.4</td>
+                <td class="table-second">81.3</td>
+                <td class="table-second">87.3</td>
+                <td class="table-best">50.3</td>
+                <td class="table-best">76.3</td>
+                <td class="table-best">83.9</td>
+                <td class="table-second">80.1</td>
+              </tr>
+              
+              <!-- Model Architecture: SigLIP2-L/16@256 -->
+              <tr>
+                <td colspan="20" class="table-model-section" style="text-align: center;">Model Architecture: SigLIP2-L/16@256</td>
+              </tr>
+              <tr>
+                <td class="table-baseline">Baseline</td>
+                <td class="table-baseline">53.5</td>
+                <td class="table-baseline">78.1</td>
+                <td class="table-baseline">85.5</td>
+                <td class="table-baseline">79.6</td>
+                <td class="table-baseline">95.7</td>
+                <td class="table-baseline">98.3</td>
+                <td class="table-baseline">51.7</td>
+                <td class="table-baseline">79.9</td>
+                <td class="table-baseline">89.0</td>
+                <td class="table-baseline">55.4</td>
+                <td class="table-baseline">81.9</td>
+                <td class="table-baseline">90.5</td>
+                <td class="table-baseline">50.2</td>
+                <td class="table-baseline">71.1</td>
+                <td class="table-baseline">78.5</td>
+                <td class="table-baseline">45.6</td>
+                <td class="table-baseline">70.4</td>
+                <td class="table-baseline">78.5</td>
+                <td class="table-baseline">74.1</td>
+              </tr>
+              <tr>
+                <td>Wukong</td>
+                <td>62.8</td>
+                <td>86.2</td>
+                <td>91.5</td>
+                <td>81.7</td>
+                <td class="table-second">96.2</td>
+                <td>98.5</td>
+                <td>61.0</td>
+                <td>85.9</td>
+                <td>93.5</td>
+                <td>62.9</td>
+                <td>88.7</td>
+                <td>95.1</td>
+                <td class="table-second">66.6</td>
+                <td>84.6</td>
+                <td class="table-second">90.1</td>
+                <td class="table-second">55.8</td>
+                <td class="table-second">80.7</td>
+                <td class="table-second">87.4</td>
+                <td>81.6</td>
+              </tr>
+              <tr>
+                <td>Zero<sup>*</sup></td>
+                <td>64.3</td>
+                <td>87.9</td>
+                <td>93.4</td>
+                <td>78.4</td>
+                <td>95.5</td>
+                <td>98.6</td>
+                <td>61.6</td>
+                <td>87.2</td>
+                <td>94.7</td>
+                <td>62.1</td>
+                <td>87.2</td>
+                <td>94.6</td>
+                <td>65.9</td>
+                <td class="table-best">85.3</td>
+                <td class="table-best">90.3</td>
+                <td>53.9</td>
+                <td>79.0</td>
+                <td>86.2</td>
+                <td>81.5</td>
+              </tr>
+              <tr>
+                <td>TaiSu<sup>*</sup></td>
+                <td class="table-best">72.6</td>
+                <td class="table-best">91.7</td>
+                <td class="table-best">95.8</td>
+                <td class="table-best">87.8</td>
+                <td class="table-best">98.7</td>
+                <td class="table-best">99.7</td>
+                <td class="table-best">71.4</td>
+                <td class="table-best">92.6</td>
+                <td class="table-best">97.3</td>
+                <td class="table-best">69.2</td>
+                <td class="table-second">91.6</td>
+                <td class="table-second">96.8</td>
+                <td>66.0</td>
+                <td class="table-second">85.0</td>
+                <td>90.0</td>
+                <td>55.1</td>
+                <td>80.1</td>
+                <td>86.7</td>
+                <td class="table-best">84.9</td>
+              </tr>
+              <tr class="table-row-danqing">
+                <td><strong>DanQing</strong></td>
+                <td class="table-second">70.2</td>
+                <td class="table-second">90.3</td>
+                <td class="table-second">94.7</td>
+                <td class="table-second">86.3</td>
+                <td class="table-best">98.7</td>
+                <td class="table-second">99.6</td>
+                <td class="table-second">65.9</td>
+                <td class="table-second">90.5</td>
+                <td class="table-second">95.4</td>
+                <td class="table-second">68.0</td>
+                <td class="table-best">92.6</td>
+                <td class="table-best">97.4</td>
+                <td class="table-best">67.5</td>
+                <td>84.9</td>
+                <td class="table-second">90.1</td>
+                <td class="table-best">56.8</td>
+                <td class="table-second">81.2</td>
+                <td class="table-best">87.5</td>
+                <td class="table-second">84.3</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="notification is-light" style="margin-top: 1.5rem;">
+          Cross-modal retrieval performance on short-caption datasets for models pretrained on various large-scale Chinese image-text datasets. <sup>*</sup> indicates random sampling of 100 million image-text pairs. The best and second-best results are highlighted in <strong>bold</strong> and <u>underlined</u>, respectively.
+        </div>
+      </div>
+      
+      <div id="tab-longRetrieval" class="anchor-content">
+        <div class="table-wrapper" style="overflow-x: auto;">
+          <table class="table is-fullwidth is-hoverable" style="font-size: 0.8rem;">
+            <thead>
+              <tr>
+                <th rowspan="3" style="text-align: left; vertical-align: middle;">Dataset</th>
+                <th colspan="6" style="text-align: center;">DCI-CN</th>
+                <th colspan="6" style="text-align: center;">DOCCI-CN</th>
+                <th rowspan="3" class="table-header-rotate" style="vertical-align: middle;">Avg.</th>
+              </tr>
+              <tr>
+                <th colspan="3" style="text-align: center;">Text → Image</th>
+                <th colspan="3" style="text-align: center;">Image → Text</th>
+                <th colspan="3" style="text-align: center;">Text → Image</th>
+                <th colspan="3" style="text-align: center;">Image → Text</th>
+              </tr>
+              <tr>
+                <th>R@1</th>
+                <th>R@5</th>
+                <th>R@10</th>
+                <th>R@1</th>
+                <th>R@5</th>
+                <th>R@10</th>
+                <th>R@1</th>
+                <th>R@5</th>
+                <th>R@10</th>
+                <th>R@1</th>
+                <th>R@5</th>
+                <th>R@10</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Model Architecture: SigLIP2-B/32@256 -->
+              <tr>
+                <td colspan="14" class="table-model-section" style="text-align: center;">Model Architecture: SigLIP2-B/32@256</td>
+              </tr>
+              <tr>
+                <td class="table-baseline">Baseline</td>
+                <td class="table-baseline">7.7</td>
+                <td class="table-baseline">18.2</td>
+                <td class="table-baseline">23.8</td>
+                <td class="table-baseline">8.7</td>
+                <td class="table-baseline">19.3</td>
+                <td class="table-baseline">25.3</td>
+                <td class="table-baseline">11.0</td>
+                <td class="table-baseline">26.5</td>
+                <td class="table-baseline">36.0</td>
+                <td class="table-baseline">14.3</td>
+                <td class="table-baseline">32.1</td>
+                <td class="table-baseline">41.6</td>
+                <td class="table-baseline">22.0</td>
+              </tr>
+              <tr>
+                <td>Wukong</td>
+                <td>10.2</td>
+                <td>22.7</td>
+                <td>29.6</td>
+                <td>11.3</td>
+                <td>23.8</td>
+                <td>30.7</td>
+                <td>16.3</td>
+                <td>34.8</td>
+                <td>44.8</td>
+                <td>15.7</td>
+                <td>35.7</td>
+                <td>46.3</td>
+                <td>26.8</td>
+              </tr>
+              <tr>
+                <td>Zero<sup>*</sup></td>
+                <td>10.9</td>
+                <td>24.4</td>
+                <td class="table-second">32.0</td>
+                <td>11.2</td>
+                <td>23.7</td>
+                <td>30.9</td>
+                <td class="table-second">17.1</td>
+                <td>35.8</td>
+                <td>45.8</td>
+                <td class="table-second">17.8</td>
+                <td>38.5</td>
+                <td class="table-second">50.1</td>
+                <td>28.2</td>
+              </tr>
+              <tr>
+                <td>TaiSu<sup>*</sup></td>
+                <td class="table-second">11.3</td>
+                <td class="table-second">24.0</td>
+                <td>31.5</td>
+                <td class="table-second">12.5</td>
+                <td class="table-best">26.2</td>
+                <td class="table-second">33.1</td>
+                <td>16.8</td>
+                <td class="table-second">37.1</td>
+                <td class="table-second">47.4</td>
+                <td>16.6</td>
+                <td class="table-second">38.8</td>
+                <td>49.1</td>
+                <td class="table-second">28.7</td>
+              </tr>
+              <tr class="table-row-danqing">
+                <td><strong>DanQing</strong></td>
+                <td class="table-best">13.1</td>
+                <td class="table-best">27.4</td>
+                <td class="table-best">35.0</td>
+                <td class="table-best">12.6</td>
+                <td class="table-second">26.1</td>
+                <td class="table-best">33.7</td>
+                <td class="table-best">19.8</td>
+                <td class="table-best">42.0</td>
+                <td class="table-best">52.8</td>
+                <td class="table-best">18.7</td>
+                <td class="table-best">40.4</td>
+                <td class="table-best">51.5</td>
+                <td class="table-best">31.1</td>
+              </tr>
+              
+              <!-- Model Architecture: SigLIP2-B/16@256 -->
+              <tr>
+                <td colspan="14" class="table-model-section" style="text-align: center;">Model Architecture: SigLIP2-B/16@256</td>
+              </tr>
+              <tr>
+                <td class="table-baseline">Baseline</td>
+                <td class="table-baseline">8.7</td>
+                <td class="table-baseline">19.6</td>
+                <td class="table-baseline">25.9</td>
+                <td class="table-baseline">10.4</td>
+                <td class="table-baseline">21.0</td>
+                <td class="table-baseline">26.8</td>
+                <td class="table-baseline">13.0</td>
+                <td class="table-baseline">30.2</td>
+                <td class="table-baseline">39.8</td>
+                <td class="table-baseline">16.6</td>
+                <td class="table-baseline">35.8</td>
+                <td class="table-baseline">46.8</td>
+                <td class="table-baseline">24.6</td>
+              </tr>
+              <tr>
+                <td>Wukong</td>
+                <td>12.2</td>
+                <td>25.3</td>
+                <td>32.6</td>
+                <td>12.8</td>
+                <td>25.8</td>
+                <td>32.6</td>
+                <td>17.7</td>
+                <td>39.1</td>
+                <td>49.4</td>
+                <td>18.0</td>
+                <td>38.9</td>
+                <td>50.1</td>
+                <td>29.5</td>
+              </tr>
+              <tr>
+                <td>Zero<sup>*</sup></td>
+                <td>12.9</td>
+                <td>26.9</td>
+                <td class="table-second">34.8</td>
+                <td>12.9</td>
+                <td>25.6</td>
+                <td>33.0</td>
+                <td>18.8</td>
+                <td>39.5</td>
+                <td>49.5</td>
+                <td class="table-second">19.0</td>
+                <td>40.5</td>
+                <td>51.7</td>
+                <td>30.4</td>
+              </tr>
+              <tr>
+                <td>TaiSu<sup>*</sup></td>
+                <td class="table-second">13.2</td>
+                <td class="table-second">27.1</td>
+                <td>34.7</td>
+                <td class="table-second">14.6</td>
+                <td class="table-second">28.6</td>
+                <td class="table-second">36.0</td>
+                <td class="table-second">19.1</td>
+                <td class="table-second">40.5</td>
+                <td class="table-second">51.5</td>
+                <td>18.9</td>
+                <td class="table-second">41.1</td>
+                <td class="table-second">51.9</td>
+                <td class="table-second">31.4</td>
+              </tr>
+              <tr class="table-row-danqing">
+                <td><strong>DanQing</strong></td>
+                <td class="table-best">15.3</td>
+                <td class="table-best">30.7</td>
+                <td class="table-best">38.4</td>
+                <td class="table-best">15.0</td>
+                <td class="table-best">29.3</td>
+                <td class="table-best">36.9</td>
+                <td class="table-best">23.6</td>
+                <td class="table-best">47.3</td>
+                <td class="table-best">57.8</td>
+                <td class="table-best">22.3</td>
+                <td class="table-best">44.9</td>
+                <td class="table-best">56.6</td>
+                <td class="table-best">34.8</td>
+              </tr>
+              
+              <!-- Model Architecture: SigLIP2-L/16@256 -->
+              <tr>
+                <td colspan="14" class="table-model-section" style="text-align: center;">Model Architecture: SigLIP2-L/16@256</td>
+              </tr>
+              <tr>
+                <td class="table-baseline">Baseline</td>
+                <td class="table-baseline">16.7</td>
+                <td class="table-baseline">30.9</td>
+                <td class="table-baseline">37.5</td>
+                <td class="table-baseline">16.3</td>
+                <td class="table-baseline">30.6</td>
+                <td class="table-baseline">38.0</td>
+                <td class="table-baseline">29.3</td>
+                <td class="table-baseline">53.5</td>
+                <td class="table-baseline">64.3</td>
+                <td class="table-baseline">29.0</td>
+                <td class="table-baseline">54.4</td>
+                <td class="table-baseline">64.9</td>
+                <td class="table-baseline">38.8</td>
+              </tr>
+              <tr>
+                <td>Wukong</td>
+                <td>23.1</td>
+                <td>41.0</td>
+                <td>48.6</td>
+                <td>21.8</td>
+                <td>38.3</td>
+                <td>46.0</td>
+                <td>37.1</td>
+                <td>64.2</td>
+                <td>74.2</td>
+                <td>33.3</td>
+                <td>59.2</td>
+                <td>69.8</td>
+                <td>46.4</td>
+              </tr>
+              <tr>
+                <td>Zero<sup>*</sup></td>
+                <td>24.8</td>
+                <td>43.0</td>
+                <td>51.4</td>
+                <td>24.5</td>
+                <td>41.6</td>
+                <td>49.9</td>
+                <td>37.6</td>
+                <td>66.4</td>
+                <td>75.8</td>
+                <td class="table-second">38.4</td>
+                <td class="table-second">67.4</td>
+                <td class="table-second">77.8</td>
+                <td>49.9</td>
+              </tr>
+              <tr>
+                <td>TaiSu<sup>*</sup></td>
+                <td class="table-second">26.6</td>
+                <td class="table-second">44.4</td>
+                <td class="table-second">52.2</td>
+                <td class="table-second">26.0</td>
+                <td class="table-second">43.2</td>
+                <td class="table-second">51.1</td>
+                <td class="table-second">41.1</td>
+                <td class="table-second">67.3</td>
+                <td class="table-second">76.8</td>
+                <td>37.1</td>
+                <td>63.2</td>
+                <td>73.2</td>
+                <td class="table-second">50.2</td>
+              </tr>
+              <tr class="table-row-danqing">
+                <td><strong>DanQing</strong></td>
+                <td class="table-best">31.3</td>
+                <td class="table-best">50.7</td>
+                <td class="table-best">58.4</td>
+                <td class="table-best">30.5</td>
+                <td class="table-best">49.9</td>
+                <td class="table-best">58.2</td>
+                <td class="table-best">48.7</td>
+                <td class="table-best">76.4</td>
+                <td class="table-best">84.5</td>
+                <td class="table-best">44.8</td>
+                <td class="table-best">72.2</td>
+                <td class="table-best">81.5</td>
+                <td class="table-best">57.3</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="notification is-light" style="margin-top: 1.5rem;">
+          Cross-modal retrieval performance on long-caption datasets for models pretrained on various datasets. <sup>*</sup> indicates random sampling of 100 million image-text pairs. The best and second-best results are highlighted in <strong>bold</strong> and <u>underlined</u>, respectively.
+        </div>
+      </div>
+
+      <div id="tab-mllmDownstream" class="anchor-content">
+        <div class="table-wrapper" style="overflow-x: auto;">
+          <table class="table is-fullwidth is-hoverable" style="font-size: 0.85rem;">
+            <thead>
+              <tr>
+                <th rowspan="2" style="text-align: left; vertical-align: middle;">Dataset</th>
+                <th colspan="2" style="text-align: center;">MMBench (Dev)</th>
+                <th rowspan="2" style="text-align: center; vertical-align: middle;">MME-RW</th>
+                <th rowspan="2" class="text-align: center; vertical-align: middle;">CMMMU</th>
+                <th rowspan="2" class="text-align: center; vertical-align: middle;">OCRBench</th>
+                <th rowspan="2" class="text-align: center; vertical-align: middle;">Avg.</th>
+              </tr>
+              <tr>
+                <th style="text-align: center;">CN</th>
+                <th style="text-align: center;">EN</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Model Architecture: SigLIP2-L/16@256 + Qwen2-7B -->
+              <tr>
+                <td colspan="7" class="table-model-section" style="text-align: center;">Model Architecture: SigLIP2-L/16@256 + Qwen2-7B</td>
+              </tr>
+              <tr>
+                <td class="table-baseline">Baseline</td>
+                <td class="table-baseline">72.9</td>
+                <td class="table-baseline">73.6</td>
+                <td class="table-baseline">43.1</td>
+                <td class="table-baseline">38.7</td>
+                <td class="table-baseline">15.0</td>
+                <td class="table-baseline">48.7</td>
+              </tr>
+              <tr>
+                <td>Wukong</td>
+                <td>73.5</td>
+                <td class="table-best">75.6</td>
+                <td class="table-second">43.8</td>
+                <td>39.7</td>
+                <td>15.0</td>
+                <td class="table-second">49.5</td>
+              </tr>
+              <tr>
+                <td>Zero<sup>*</sup></td>
+                <td>72.9</td>
+                <td>75.0</td>
+                <td>42.3</td>
+                <td>39.4</td>
+                <td class="table-second">15.7</td>
+                <td>49.1</td>
+              </tr>
+              <tr>
+                <td>TaiSu<sup>*</sup></td>
+                <td class="table-second">73.5</td>
+                <td>75.3</td>
+                <td>42.8</td>
+                <td class="table-best">39.8</td>
+                <td>15.1</td>
+                <td>49.3</td>
+              </tr>
+              <tr class="table-row-danqing">
+                <td><strong>DanQing</strong></td>
+                <td class="table-best">74.0</td>
+                <td class="table-second">75.3</td>
+                <td class="table-best">45.4</td>
+                <td class="table-second">39.7</td>
+                <td class="table-best">16.0</td>
+                <td class="table-best">50.1</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="notification is-light" style="margin-top: 1.5rem;">
+          Performance of LLaVA-NeXT-style models on Chinese-centric LMM downstream benchmarks, utilizing vision encoders pretrained on various datasets. <sup>*</sup> indicates random sampling of 100 million image-text pairs. The best and second-best results are highlighted in <strong>bold</strong> and <u>underlined</u>, respectively.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Analysis Section -->
+  <section id="analysis" class="section" style="background-color: #f8fafc;">
+    <div class="container is-max-desktop">
+      <h2 class="title is-2" style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+        <i class="fas fa-microscope toc-icon"></i>
+        <span>Analysis</span>
+      </h2>
+      
+      <!-- Text Quality Analysis -->
+      <div style="margin-bottom: 4rem;">
+        <h3 class="title is-4 has-text-centered" style="margin-bottom: 2rem;">Text Quality Analysis</h3>
+        
+        <div class="columns is-multiline">
+          <div class="column is-6">
+            <div class="analysis-card">
+              <div class="has-text-centered" style="margin-bottom: 1rem;">
+                <img src="static/image_danqing/analysis/text_word.jpg" 
+                     alt="Text Semantic Word Density" 
+                     style="width: 100%; max-width: 500px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              </div>
+              <h4 class="title is-6" style="margin-bottom: 0.75rem;">Semantic Word Density</h4>
+              <p class="analysis-content">
+                Comparison of 10M texts from DanQing, Wukong, and Zero. DanQing exhibits 
+                <strong>significantly higher semantic density</strong> (nouns, verbs, adjectives), 
+                enabling models to acquire more effective semantic information.
+              </p>
+            </div>
+          </div>
+
+          <div class="column is-6">
+            <div class="analysis-card">
+              <div class="has-text-centered" style="margin-bottom: 1rem;">
+                <img src="static/image_danqing/analysis/text_ppl.jpg" 
+                     alt="Text Perplexity Distribution" 
+                     style="width: 100%; max-width: 500px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              </div>
+              <h4 class="title is-6" style="margin-bottom: 0.75rem;">Perplexity (PPL) Distribution</h4>
+              <p class="analysis-content">
+                Sentence-level PPL computed using Chinese BERT. DanQing has 
+                <strong>substantially more samples in [50, 200] range</strong>, indicating 
+                optimal linguistic complexity (neither simplistic nor incoherent).
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scaling Ability -->
+      <div style="margin-bottom: 4rem;">
+        <h3 class="title is-4 has-text-centered" style="margin-bottom: 2rem;">Scaling Ability</h3>
+        
+        <div class="columns is-multiline">
+          <div class="column is-6">
+            <div class="analysis-card">
+              <div class="has-text-centered" style="margin-bottom: 1rem;">
+                <img src="static/image_danqing/analysis/data_scaling.jpg" 
+                     alt="Data Scaling Comparison" 
+                     style="width: 100%; max-width: 500px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              </div>
+              <h4 class="title is-6" style="margin-bottom: 0.75rem;">Data Scaling</h4>
+              <p class="analysis-content">
+                SigLIP2-B/32 trained on varying scales (10M, 30M, 60M, 100M). DanQing 
+                <strong>consistently outperforms Wukong</strong> across all scales, with improvements 
+                more pronounced at larger scales. Wukong plateaus beyond 30M, while DanQing 
+                continues improving to 100M.
+              </p>
+            </div>
+          </div>
+
+          <div class="column is-6">
+            <div class="analysis-card">
+              <div class="has-text-centered" style="margin-bottom: 1rem;">
+                <img src="static/image_danqing/analysis/model_scaling.jpg" 
+                     alt="Model Scaling Comparison" 
+                     style="width: 100%; max-width: 500px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              </div>
+              <h4 class="title is-6" style="margin-bottom: 0.75rem;">Model Scaling</h4>
+              <p class="analysis-content">
+                Using 30M subsets, we train SigLIP2 models (Base~86M, Large~303M, So~400M, g-opt~1B). 
+                DanQing <strong>outperforms Wukong</strong> across all model sizes with a 
+                <strong>steeper scaling curve</strong>, better leveraging increased model capacity.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Image Semantic Balance -->
+      <div style="margin-bottom: 4rem;">
+        <h3 class="title is-4 has-text-centered" style="margin-bottom: 2rem;">Image Semantic Balance</h3>
+        
+        <div class="analysis-container">
+          <div class="columns">
+            <div class="column is-5">
+              <div class="has-text-centered">
+                <img src="static/image_danqing/analysis/Image_semantic_diversity.jpg" 
+                     alt="Image Semantic Diversity" 
+                     style="width: 100%; max-width: 450px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              </div>
+            </div>
+            <div class="column is-7">
+              <div class="analysis-text-box">
+                <p class="analysis-content">
+                  Clustering distribution of 10M images from DanQing and Wukong (10k clusters via FAISS). 
+                  DanQing achieves a <strong>significantly more balanced and uniform semantic distribution</strong> 
+                  than Wukong, effectively mitigating the long-tail effect. This increased uniformity suggests 
+                  <strong>broader coverage of the visual manifold</strong>, essential for learning rare concepts.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Image-Text Alignment -->
+      <div style="margin-bottom: 4rem;">
+        <h3 class="title is-4 has-text-centered" style="margin-bottom: 2rem;">Image-Text Alignment</h3>
+        
+        <div class="analysis-container">
+          <div class="columns">
+            <div class="column is-7">
+              <div class="analysis-text-box">
+                <p class="analysis-content">
+                  Image-text similarity distribution for 10M samples using FG-CLIP2-L/16. DanQing 
+                  <strong>consistently achieves higher similarity scores</strong> than Wukong, with 
+                  significantly more samples exceeding the 0.15 threshold, demonstrating 
+                  <strong>stronger semantic consistency</strong> between images and texts. The higher 
+                  proportion in 0-0.05 range reflects novel 2024-2025 content, explaining improved 
+                  retrieval performance.
+                </p>
+              </div>
+            </div>
+            <div class="column is-5">
+              <div class="has-text-centered">
+                <img src="static/image_danqing/analysis/Image_text_similarity.jpg" 
+                     alt="Image-Text Similarity Distribution" 
+                     style="width: 100%; max-width: 450px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- New Concept Understanding -->
+      <div>
+        <h3 class="title is-4 has-text-centered" style="margin-bottom: 2rem;">New Concept Understanding</h3>
+        
+        <div class="analysis-container">
+          <div class="columns is-multiline" style="margin-bottom: 1.5rem;">
+            <div class="column is-6">
+              <div class="has-text-centered">
+                <img src="static/image_danqing/analysis/new_concept_balckmyth.jpg" 
+                     alt="New Concept Understanding - Black Myth" 
+                     style="width: 100%; max-width: 100%; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              </div>
+            </div>
+            <div class="column is-6">
+              <div class="has-text-centered">
+                <img src="static/image_danqing/analysis/new_concept_xiaomi.jpg" 
+                     alt="New Concept Understanding - Xiaomi SU7" 
+                     style="width: 100%; max-width: 100%; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              </div>
+            </div>
+          </div>
+          
+          <div class="analysis-text-box">
+            <p class="analysis-content">
+              Evaluation of SigLIP2-L/16@256 models on emergent concepts (post-2024 buzzwords like 
+              "黑神话:悟空" and "小米SU7"). Models trained on DanQing 
+              <strong>consistently assign highest confidence to correct pairs</strong>, demonstrating 
+              that DanQing contains <strong>more up-to-date information</strong>, enabling models to 
+              internalize contemporary knowledge and generalize to recent real-world concepts.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="bibtex" class="section">
+    <div class="container is-max-desktop">
+      <h2 class="title is-2" style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+        <i class="fas fa-quote-right toc-icon"></i>
+        <span>BibTeX</span>
+      </h2>
+      <div id="bibtex-section">
+        <button class="copy-btn" onclick="copyBib()">
+          <i class="fa-regular fa-copy"></i> Copy
+        </button>
+        <pre><code id="bib-code">
+          coming soon...
+        </code></pre>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer has-text-centered">
+    <div class="container">
+      <p>This website is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Tab Switching Logic
+    document.querySelectorAll('.tabs li').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.dataset.target;
+        
+        // Update Tabs
+        tab.closest('ul').querySelectorAll('li').forEach(li => li.classList.remove('is-active'));
+        tab.classList.add('is-active');
+        
+        // Update Content with smooth transition
+        document.querySelectorAll('.anchor-content').forEach(content => {
+          content.style.opacity = '0';
+          content.style.transform = 'translateY(10px)';
+          setTimeout(() => {
+            content.classList.remove('is-active');
+          }, 200);
+        });
+        
+        setTimeout(() => {
+          const targetContent = document.getElementById(target);
+          targetContent.classList.add('is-active');
+          setTimeout(() => {
+            targetContent.style.opacity = '1';
+            targetContent.style.transform = 'translateY(0)';
+          }, 50);
+        }, 200);
+      });
+    });
+
+    // BibTeX Copy Logic
+    function copyBib() {
+      const text = document.getElementById('bib-code').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+        btn.style.background = 'rgba(34, 197, 94, 0.2)';
+        setTimeout(() => {
+          btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy';
+          btn.style.background = 'rgba(255,255,255,0.1)';
+        }, 2000);
+      });
+    }
+
+    // 滚动进度条
+    window.addEventListener('scroll', () => {
+      const scrollProgress = document.getElementById('scroll-progress');
+      const scrollTop = window.pageYOffset;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPercent = (scrollTop / docHeight) * 100;
+      scrollProgress.style.width = scrollPercent + '%';
+    });
+
+    // 返回顶部按钮
+    const backToTopBtn = document.getElementById('back-to-top');
+    
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 300) {
+        backToTopBtn.classList.add('show');
+      } else {
+        backToTopBtn.classList.remove('show');
+      }
+    });
+
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+
+    // 页面加载动画
+    window.addEventListener('load', () => {
+      document.body.style.opacity = '0';
+      setTimeout(() => {
+        document.body.style.transition = 'opacity 0.5s ease';
+        document.body.style.opacity = '1';
+      }, 100);
+    });
+
+    // 图片懒加载动画（Intersection Observer）
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const imageObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '0';
+          entry.target.style.transform = 'translateY(20px)';
+          entry.target.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+          
+          setTimeout(() => {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+          }, 100);
+          
+          imageObserver.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    // 观察所有图片
+    document.querySelectorAll('img').forEach(img => {
+      imageObserver.observe(img);
+    });
+
+    // 卡片hover增强效果
+    document.querySelectorAll('.method-phase-card, .stat-card, .analysis-card').forEach(card => {
+      card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-8px) scale(1.02)';
+      });
+      
+      card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0) scale(1)';
+      });
+    });
+
+    // 图片点击放大功能
+    const imageModal = document.getElementById('image-modal');
+    const modalImage = document.getElementById('modal-image');
+    const modalCaption = document.getElementById('image-modal-caption');
+    const modalClose = document.getElementById('image-modal-close');
+
+    // 为所有图片添加点击事件（排除logo和图标）
+    document.querySelectorAll('img').forEach(img => {
+      // 只处理内容图片，排除logo、图标等
+      const shouldZoom = img.src && 
+                        !img.src.includes('logo') && 
+                        !img.src.includes('icon') &&
+                        !img.classList.contains('no-zoom') &&
+                        (img.src.includes('image_danqing') || 
+                         img.src.includes('image_uniMEv2') ||
+                         img.width > 100 || 
+                         img.height > 100);
+      
+      if (shouldZoom) {
+        img.classList.add('zoomable');
+        
+        img.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          // 设置模态框图片
+          modalImage.src = this.src;
+          modalImage.alt = this.alt || '';
+          
+          // 设置标题（如果有）
+          const caption = this.alt || this.title || '';
+          if (caption) {
+            modalCaption.textContent = caption;
+            modalCaption.style.display = 'block';
+          } else {
+            modalCaption.style.display = 'none';
+          }
+          
+          // 显示模态框
+          imageModal.classList.add('active');
+          document.body.style.overflow = 'hidden'; // 防止背景滚动
+        });
+      }
+    });
+
+    // 关闭模态框
+    function closeImageModal() {
+      imageModal.classList.remove('active');
+      document.body.style.overflow = ''; // 恢复滚动
+      setTimeout(() => {
+        modalImage.src = '';
+        modalCaption.textContent = '';
+      }, 300);
+    }
+
+    // 点击关闭按钮
+    modalClose.addEventListener('click', closeImageModal);
+
+    // 点击模态框背景关闭
+    imageModal.addEventListener('click', function(e) {
+      if (e.target === imageModal) {
+        closeImageModal();
+      }
+    });
+
+    // ESC键关闭
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && imageModal.classList.contains('active')) {
+        closeImageModal();
+      }
+    });
+
+    // 目录导航功能
+    const tocItems = document.querySelectorAll('.toc-item');
+    const sections = document.querySelectorAll('section[id]');
+
+    // 处理目录点击
+    tocItems.forEach(item => {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetSection = document.getElementById(targetId);
+        
+        if (targetSection) {
+          const offsetTop = targetSection.offsetTop - 80; // 考虑固定导航栏高度
+          window.scrollTo({
+            top: offsetTop,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    // 滚动时高亮当前section
+    function updateActiveTocItem() {
+      let current = '';
+      const scrollPosition = window.pageYOffset + 150; // 提前触发距离
+
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.offsetHeight;
+        const sectionId = section.getAttribute('id');
+
+        if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+          current = sectionId;
+        }
+      });
+
+      // 更新目录项状态
+      tocItems.forEach(item => {
+        const itemSection = item.getAttribute('data-section');
+        if (itemSection === current) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+    }
+
+    // 监听滚动事件
+    let ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          updateActiveTocItem();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    // 页面加载时更新一次
+    updateActiveTocItem();
+
+    // TOC 切换按钮功能（移动端）
+    const tocToggleBtn = document.querySelector('.toc-toggle-btn');
+    const tocSidebar = document.querySelector('.table-of-contents');
+    
+    if (tocToggleBtn && tocSidebar) {
+      // 切换显示/隐藏
+      tocToggleBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        tocSidebar.classList.toggle('active');
+        tocToggleBtn.classList.toggle('active');
+        
+        // 切换图标
+        const icon = tocToggleBtn.querySelector('i');
+        if (tocSidebar.classList.contains('active')) {
+          icon.classList.remove('fa-list');
+          icon.classList.add('fa-times');
+        } else {
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-list');
+        }
+      });
+
+      // 点击 TOC 项后自动关闭（移动端）
+      tocItems.forEach(item => {
+        item.addEventListener('click', function() {
+          if (window.innerWidth <= 768) {
+            setTimeout(() => {
+              tocSidebar.classList.remove('active');
+              tocToggleBtn.classList.remove('active');
+              const icon = tocToggleBtn.querySelector('i');
+              icon.classList.remove('fa-times');
+              icon.classList.add('fa-list');
+            }, 300);
+          }
+        });
+      });
+
+      // 点击外部区域关闭
+      document.addEventListener('click', function(e) {
+        if (window.innerWidth <= 768) {
+          if (!tocSidebar.contains(e.target) && !tocToggleBtn.contains(e.target)) {
+            tocSidebar.classList.remove('active');
+            tocToggleBtn.classList.remove('active');
+            const icon = tocToggleBtn.querySelector('i');
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-list');
+          }
+        }
+      });
+    }
+
+    // 根据滚动位置调整侧边栏位置
+    const tocSidebarScroll = document.querySelector('.table-of-contents');
+    window.addEventListener('scroll', function() {
+      if (tocSidebarScroll && window.innerWidth > 768) {
+        if (window.pageYOffset < 200) {
+          tocSidebarScroll.classList.add('scrolled');
+        } else {
+          tocSidebarScroll.classList.remove('scrolled');
+        }
+      }
+    });
+
+    // Timeline 展开/收起功能
+    document.querySelectorAll('.timeline-item').forEach(item => {
+      const header = item.querySelector('.timeline-header');
+      const body = item.querySelector('.timeline-body');
+      
+      header.addEventListener('click', function(e) {
+        e.preventDefault();
+        const isActive = item.classList.contains('active');
+        
+        // 如果点击的是当前激活项，则收起；否则先收起所有，再展开当前
+        if (isActive) {
+          item.classList.remove('active');
+          // 平滑滚动到该项顶部
+          setTimeout(() => {
+            item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 100);
+        } else {
+          // 收起所有其他项
+          document.querySelectorAll('.timeline-item').forEach(otherItem => {
+            if (otherItem !== item) {
+              otherItem.classList.remove('active');
+            }
+          });
+          // 展开当前项
+          item.classList.add('active');
+          // 平滑滚动到该项（在移动端使用center，桌面端使用nearest）
+          setTimeout(() => {
+            const isMobile = window.innerWidth <= 768;
+            item.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: isMobile ? 'center' : 'nearest' 
+            });
+          }, 100);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
