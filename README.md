@@ -3,7 +3,8 @@
 <img src="Figures/danqing.svg" width="50%">
 
 **100M** image-text pairs | **12TB** dataset | **2024-2025** web data
-**DanQing: An Up-to-Date Large-Scale Chinese Vision-Language Pre-training Dataset**
+
+<h1 align="center">DanQing: An Up-to-Date Large-Scale Chinese Vision-Language Pre-training Dataset</h1>
 
 </div>
 
@@ -12,7 +13,7 @@
 
 Hengyu Shen<sup>∗</sup>, [**Tiancheng Gu**](https://scholar.google.com/citations?hl=zh-CN&user=9etrpbYAAAAJ)<sup>∗</sup>, Bin Qin, Lan Wu, Yuling Wu, Shuo Tan, [**Zelong Sun**](https://scholar.google.com/citations?user=mDxuGMgAAAAJ&hl=zh-CN), Jun Wang, Nan Wu, [**Xiang An**](https://anxiangsir.github.io/), [**Weidong Cai**](https://weidong-tom-cai.github.io/), [**Ziyong Feng**](https://scholar.google.com/citations?user=xlKttUEAAAAJ&hl=zh-CN)<sup>‡</sup>, [**Kaicheng Yang**](https://kaicheng-yang0828.github.io)<sup>†</sup>
 
-<sup>∗</sup> Equal Contribution | <sup>†</sup> Project Leader | <sup>‡</sup> Team Leader
+<sup>∗</sup> Equal Contribution | <sup>‡</sup> Team Leader | <sup>†</sup> Project Leader
 
 [![Paper](https://img.shields.io/badge/📄-Paper-red)]()
 [![Hugging Face](https://img.shields.io/badge/🤗%20Hugging%20Face-Dataset-yellow)](https://huggingface.co/datasets/DeepGlint-AI/DanQing100M)
@@ -39,8 +40,6 @@ Hengyu Shen<sup>∗</sup>, [**Tiancheng Gu**](https://scholar.google.com/citatio
 ---
 
 ## 📑 Table of Contents
-- [📣 News](#-news)
-- [📑 Table of Contents](#-table-of-contents)
 - [💡 Highlights](#-highlights)
 - [💻 Dataset Information](#-dataset-information)
   - [Data Preview](#data-preview)
