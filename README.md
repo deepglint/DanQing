@@ -2,7 +2,7 @@
 
 <img src="Figures/danqing.svg" width="50%">
 
-**100M** image-text pairs | **12TB** dataset | **2024-2025** web data
+**100M** Chinese image-text pairs | **12TB** dataset | **2024-2025** web data
 
 <h1 align="center">DanQing: An Up-to-Date Large-Scale Chinese Vision-Language Pre-training Dataset</h1>
 
