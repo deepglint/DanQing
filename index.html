@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="description" content="DanQing: An Up-to-Date Large-Scale Chinese Vision-Language Pre-training Dataset">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DanQing & UniME-v2</title>
+  <title>DanQing</title>
 
   <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
@@ -96,6 +96,16 @@
       overflow: hidden;
     }
 
+    .hero-custom.hero-with-bg {
+      background-image:
+        linear-gradient(135deg, rgba(248, 250, 252, 0.9), rgba(226, 232, 240, 0.95)),
+        url('static/image_danqing/intro_2.png');
+      background-size: cover;
+      /* 主体左右居中，垂直也居中 */
+      background-position: center center;
+      background-repeat: no-repeat;
+    }
+
     .hero-custom::before {
       content: '';
       position: absolute;
@@ -119,7 +129,11 @@
       font-size: 3rem !important;
       line-height: 1.2;
       margin-bottom: 1.5rem !important;
-      color: #0f172a;
+      color: #0b1120;
+      text-shadow: 
+        0.5px 0.5px 0 rgba(15, 23, 42, 0.1),
+        1px 1px 0 rgba(15, 23, 42, 0.05),
+        0 2px 4px rgba(15, 23, 42, 0.08);
     }
 
     .publication-title i { font-style: italic; }
@@ -139,10 +153,15 @@
       font-weight: 600;
       font-size: 1.15rem;
       white-space: nowrap;
+      color: #0f172a;
+      text-shadow: 
+        0.5px 0.5px 0 rgba(15, 23, 42, 0.1),
+        1px 1px 0 rgba(15, 23, 42, 0.05),
+        0 2px 4px rgba(15, 23, 42, 0.08);
     }
     
     .author-separator {
-      color: #94a3b8;
+      color: #e2e8f0;
       font-weight: 400;
       user-select: none;
     }
@@ -173,12 +192,162 @@
       width: 100%;
     }
 
+    /* Hero affiliation text 背景增强可读性 */
+    .hero-affiliation-text {
+      font-size: 1.2rem;
+      line-height: 1.7;
+      color: #0f172a;
+      text-shadow: 
+        0.5px 0.5px 0 rgba(15, 23, 42, 0.1),
+        1px 1px 0 rgba(15, 23, 42, 0.05),
+        0 2px 4px rgba(15, 23, 42, 0.08);
+    }
+
+    /* 数据预览滑动胶片区域 */
+    .data-gallery-section {
+      padding: 1.75rem 1.5rem 2.1rem;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.02), rgba(15, 23, 42, 0.06));
+    }
+
+    .data-gallery-card {
+      max-width: 1080px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 18px;
+      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.15);
+      padding: 1.25rem 1.5rem 1.4rem;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      backdrop-filter: blur(14px);
+    }
+
+    .data-gallery-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .data-gallery-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    .data-gallery-title i {
+      color: var(--primary-color);
+    }
+
+    .data-gallery-subtitle {
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+
+    .data-gallery-viewport {
+      position: relative;
+      margin-top: 0.25rem;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-bottom: 0.5rem;
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 transparent;
+    }
+
+    .data-gallery-viewport::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .data-gallery-viewport::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .data-gallery-viewport::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px;
+    }
+
+    .data-gallery-strip {
+      display: flex;
+      gap: 0.9rem;
+      padding: 0.2rem 0.1rem 0.1rem;
+      scroll-snap-type: x mandatory;
+    }
+
+    .data-gallery-item {
+      position: relative;
+      min-width: 260px;
+      max-width: 320px;
+      aspect-ratio: 4 / 3;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #020617;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.35);
+      scroll-snap-align: center;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .data-gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease, opacity 0.4s ease;
+    }
+
+    .data-gallery-item:hover img {
+      transform: scale(1.04);
+      opacity: 0.98;
+    }
+
+    .data-gallery-item-label {
+      position: absolute;
+      left: 0.75rem;
+      bottom: 0.65rem;
+      padding: 0.18rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: rgba(15, 23, 42, 0.8);
+      color: #e5e7eb;
+      backdrop-filter: blur(6px);
+    }
+
+    .data-gallery-film-edge {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image: radial-gradient(circle at top, rgba(15, 23, 42, 0.25) 0, transparent 55%),
+                        radial-gradient(circle at bottom, rgba(15, 23, 42, 0.25) 0, transparent 55%);
+      mix-blend-mode: soft-light;
+    }
+
+    @media (max-width: 768px) {
+      .data-gallery-section {
+        padding: 1.5rem 1rem 1.9rem;
+      }
+
+      .data-gallery-card {
+        padding: 1.25rem 1.25rem 1.5rem;
+      }
+
+      .data-gallery-item {
+        min-width: 220px;
+      }
+    }
+
     /* 按钮样式 */
     .link-block a {
       border-radius: 24px !important;
       padding: 0 1.5rem !important;
       font-weight: 600 !important;
       transition: all 0.3s ease !important;
+
     }
 
     .link-block a:hover {
@@ -1709,47 +1878,48 @@
     </div>
   </div>
 
-  <section class="hero-custom has-text-centered">
+  <section class="hero-custom hero-with-bg has-text-centered">
     <div class="container is-max-desktop">
       <h1 class="publication-title" style="display: flex; align-items: center; justify-content: center; gap: 1.25rem; flex-wrap: wrap; text-align: center;">
-        <img src="static/image_danqing/logo/danqing_logo.png" style="height: 3.5rem; width: auto; flex-shrink: 0; display: block; order: -1;" alt="DanQing Logo">
+        <!-- <img src="static/image_danqing/logo/danqing_logo.png" style="height: 3.5rem; width: auto; flex-shrink: 0; display: block; order: -1;" alt="DanQing Logo"> -->
         <span style="flex: 1; min-width: 500px; text-align: center;">
-          DanQing: An Up-to-Date Large-Scale Chinese Vision-Language Pre-training Dataset
+          DanQing:<br>
+          An Up-to-Date Large-Scale Chinese Vision-Language Pre-training Dataset
         </span>
       </h1>
 
       <div class="publication-authors">
-        <span class="author-block"><a href="">Hengyu Shen</a><sup>1,2*</sup></span>
+        <span class="author-block"><a href="">Hengyu Shen</a><sup>*</sup></span>
         <span class="author-separator">•</span>
-        <span class="author-block"><a href="https://scholar.google.com/citations?hl=zh-CN&user=9etrpbYAAAAJ">Tiancheng Gu</a><sup>1,3*</sup></span>
+        <span class="author-block"><a href="https://scholar.google.com/citations?hl=zh-CN&user=9etrpbYAAAAJ">Tiancheng Gu</a><sup>*</sup></span>
         <span class="author-separator">•</span>
-        <span class="author-block"><a href="">Bin Qin</a><sup>1</sup></span>
+        <span class="author-block"><a href="">Bin Qin</a></span>
         <span class="author-separator">•</span>
-        <span class="author-block"><a href="">Lan Wu</a><sup>1</sup></span>
+        <span class="author-block"><a href="">Lan Wu</a></span>
         <span class="author-separator">•</span>
-        <span class="author-block"><a href="">Yuling Wu</a><sup>1</sup></span>
+        <span class="author-block"><a href="">Yuling Wu</a></span>
         <span class="author-separator">•</span>
-        <span class="author-block"><a href="">Shuo Tan</a><sup>1,2</sup></span>
+        <span class="author-block"><a href="">Shuo Tan</a></span>
         <span class="author-separator">•</span>
-        <span class="author-block"><a href="https://scholar.google.com/citations?user=mDxuGMgAAAAJ&hl=zh-CN">Zelong Sun</a><sup>1,4</sup></span>
+        <span class="author-block"><a href="https://scholar.google.com/citations?user=mDxuGMgAAAAJ&hl=zh-CN">Zelong Sun</a></span>
+        <span class="author-separator">•</span>
+        <span class="author-block"><a href="">Jun Wang</a></span>
         <!-- <span class="author-separator">•</span> -->
-        <span class="author-block"><a href="">Jun Wang</a><sup>1</sup></span>
+        <span class="author-block"><a href="">Nan Wu</a></span>
         <span class="author-separator">•</span>
-        <span class="author-block"><a href="">Nan Wu</a><sup>1</sup></span>
+        <span class="author-block"><a href="https://scholar.google.com/citations?user=1ckaPgwAAAAJ&hl=zh-CN">Xiang An</a></span>
         <span class="author-separator">•</span>
-        <span class="author-block"><a href="https://scholar.google.com/citations?user=1ckaPgwAAAAJ&hl=zh-CN">Xiang An</a><sup>1</sup></span>
+        <span class="author-block"><a href="https://scholar.google.com/citations?user=N8qTc2AAAAAJ&hl=zh-CN">Weidong Cai</a></span>
         <span class="author-separator">•</span>
-        <span class="author-block"><a href="https://scholar.google.com/citations?user=N8qTc2AAAAAJ&hl=zh-CN">Weidong Cai</a><sup>3</sup></span>
+        <span class="author-block"><a href="https://scholar.google.com/citations?user=xlKttUEAAAAJ&hl=zh-CN">Ziyong Feng</a><sup>‡</sup></span>
         <span class="author-separator">•</span>
-        <span class="author-block"><a href="https://scholar.google.com/citations?user=xlKttUEAAAAJ&hl=zh-CN">Ziyong Feng</a><sup>1</sup></span>
-        <span class="author-separator">•</span>
-        <span class="author-block"><a href="https://scholar.google.com/citations?user=AQMkoXIAAAAJ&hl=zh-CN">Kaicheng Yang</a><sup>1†</sup></span>
+        <span class="author-block"><a href="https://scholar.google.com/citations?user=AQMkoXIAAAAJ&hl=zh-CN">Kaicheng Yang</a><sup>†</sup></span>
       </div>
 
-      <div class="is-size-6" style="margin-top: 1rem; color: #64748b;">
-        <sup>1</sup>DeepGlint Inc. &nbsp; <sup>2</sup>BIT &nbsp; <sup>3</sup>USYD &nbsp; <sup>4</sup>RUC
+      <div class="is-size-10 hero-affiliation-text" style="margin-top: 1rem;">
+        <b>DanQing Team, DeepGlint Inc.</b>
         <br>
-        <strong>*Equal contribution &nbsp; †Corresponding author</strong>
+        <strong>*Equal contribution &nbsp; ‡Team Leader&nbsp; †Project Leader</strong>
       </div>
       
       <div class="column has-text-centered" style="margin-top: 1rem;">
@@ -1805,6 +1975,25 @@
     </div>
   </section>
 
+  <!-- Dataset visual preview / film-style slider -->
+  <section class="data-gallery-section">
+    <div class="container is-max-desktop">
+      <div class="data-gallery-card">
+        <div class="data-gallery-header">
+          <div class="data-gallery-title">
+            <i class="fas fa-film"></i>
+            <span>DanQing Dataset Examples</span>
+          </div>
+        </div>
+        <div class="data-gallery-viewport">
+          <div class="data-gallery-strip">
+            <!-- Images will be dynamically loaded from captions.txt -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Table of Contents - Fixed Sidebar -->
   <div class="table-of-contents">
     <h2 class="toc-title">Catalogue</h2>
@@ -1828,6 +2017,10 @@
       <a href="#analysis" class="toc-item" data-section="analysis">
         <i class="fas fa-microscope toc-icon"></i>
         <span class="toc-item-text">Analysis</span>
+      </a>
+      <a href="#license" class="toc-item" data-section="license">
+        <i class="fas fa-scale-balanced toc-icon"></i>
+        <span class="toc-item-text">License</span>
       </a>
       <a href="#bibtex" class="toc-item" data-section="bibtex">
         <i class="fas fa-quote-right toc-icon"></i>
@@ -2315,7 +2508,7 @@
                 <th class="table-header-rotate">Cars</th>
                 <th class="table-header-rotate">Memes</th>
                 <th class="table-header-rotate">VOC2007</th>
-                <th class="table-header-rotate">Avg.</th>
+                <th class="text-align: left;">Avg.</th>
               </tr>
             </thead>
             <tbody>
@@ -2590,7 +2783,7 @@
                 <th colspan="6" style="text-align: center;">Flickr30K-CN</th>
                 <th colspan="6" style="text-align: center;">MSCOCO-CN</th>
                 <th colspan="6" style="text-align: center;">MUGE</th>
-                <th rowspan="3" class="table-header-rotate" style="vertical-align: middle;">Avg.</th>
+                <th rowspan="3" class="text-align: center;" style="vertical-align: middle;">Avg.</th>
               </tr>
               <tr>
                 <th colspan="3" style="text-align: center;">Text → Image</th>
@@ -2982,7 +3175,7 @@
                 <th rowspan="3" style="text-align: left; vertical-align: middle;">Dataset</th>
                 <th colspan="6" style="text-align: center;">DCI-CN</th>
                 <th colspan="6" style="text-align: center;">DOCCI-CN</th>
-                <th rowspan="3" class="table-header-rotate" style="vertical-align: middle;">Avg.</th>
+                <th rowspan="3" class="text-align: center;" style="vertical-align: middle;">Avg.</th>
               </tr>
               <tr>
                 <th colspan="3" style="text-align: center;">Text → Image</th>
@@ -3524,6 +3717,21 @@
     </div>
   </section>
 
+  <!-- License Section -->
+  <section id="license" class="section">
+    <div class="container is-max-desktop">
+      <h2 class="title is-2" style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+        <i class="fas fa-scale-balanced toc-icon"></i>
+        <span>License</span>
+      </h2>
+      <div class="content" style="font-size: 0.95rem; line-height: 1.8; color: #475569;">
+        <p>
+          The DanQing dataset is licensed under <code>CC-BY-4.0 License</code>. The full license can be found in the <code>LICENSE.cc-by-4.0</code> file. The dataset is collected from Common Crawl web pages and may contain biased or sensitive content. The collected data is subject to the license to which each content belongs. Users are solely responsible for ensuring compliance with ethical and legal standards in their research or applications.
+        </p>
+      </div>
+    </div>
+  </section>
+
   <section id="bibtex" class="section">
     <div class="container is-max-desktop">
       <h2 class="title is-2" style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
@@ -3576,6 +3784,194 @@
         }, 200);
       });
     });
+
+    // Data gallery: load images from captions.txt and auto-scroll (seamless looping, pause on hover)
+    (function () {
+      const viewport = document.querySelector('.data-gallery-viewport');
+      const strip = document.querySelector('.data-gallery-strip');
+      if (!viewport || !strip) return;
+
+      // Load captions.txt and generate image items
+      // Try multiple path formats
+      const possiblePaths = [
+        'static/Danqing_examples/captions.txt',
+        './static/Danqing_examples/captions.txt',
+        '/Users/gutiancheng/Downloads/DanQing/static/Danqing_examples/captions.txt'
+      ];
+
+      let loadAttempt = 0;
+      const tryLoadCaptions = (pathIndex) => {
+        if (pathIndex >= possiblePaths.length) {
+          console.error('Failed to load captions.txt from all attempted paths:', possiblePaths);
+          strip.innerHTML = '<div style="padding: 2rem; text-align: center; color: #64748b;">Failed to load dataset examples. Please check captions.txt file.</div>';
+          return;
+        }
+
+        const path = possiblePaths[pathIndex];
+        console.log(`Attempting to load captions.txt from: ${path}`);
+        
+        fetch(path)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            return response.text();
+          })
+          .then(text => {
+            console.log(`Successfully loaded captions.txt from: ${path}`);
+            console.log(`File content length: ${text.length} characters`);
+            
+            // Parse captions.txt: each line is "filename.jpg<TAB or spaces>caption"
+            const lines = text.trim().split('\n').filter(line => line.trim());
+            console.log(`Found ${lines.length} lines in captions.txt`);
+            
+            let itemCount = 0;
+            lines.forEach((line, lineIndex) => {
+              // Support both tab and multiple spaces as separator
+              if (!line.toLowerCase().includes('.jpg')) {
+                console.warn(`Line ${lineIndex + 1} skipped (no .jpg): ${line.substring(0, 50)}`);
+                return;
+              }
+
+              const firstSpaceIdx = line.indexOf(' ');
+              const firstTabIdx = line.indexOf('\t');
+              let splitIdx = -1;
+
+              if (firstTabIdx !== -1 && firstSpaceIdx !== -1) {
+                splitIdx = Math.min(firstTabIdx, firstSpaceIdx);
+              } else if (firstTabIdx !== -1) {
+                splitIdx = firstTabIdx;
+              } else if (firstSpaceIdx !== -1) {
+                splitIdx = firstSpaceIdx;
+              }
+
+              if (splitIdx === -1) {
+                console.warn(`Line ${lineIndex + 1} skipped (no separator found): ${line.substring(0, 50)}`);
+                return;
+              }
+
+              const filename = line.slice(0, splitIdx).trim();
+              const caption = line.slice(splitIdx).trim();
+
+              if (!filename || !caption) {
+                console.warn(`Line ${lineIndex + 1} skipped (empty filename or caption): ${line.substring(0, 50)}`);
+                return;
+              }
+              
+              if (filename.toLowerCase().endsWith('.jpg')) {
+                itemCount++;
+                
+                // Create gallery item
+                const item = document.createElement('div');
+                item.className = 'data-gallery-item';
+                
+                const img = document.createElement('img');
+                img.src = `static/Danqing_examples/${filename}`;
+                img.alt = caption;
+                
+                const filmEdge = document.createElement('div');
+                filmEdge.className = 'data-gallery-film-edge';
+                
+                const label = document.createElement('span');
+                label.className = 'data-gallery-item-label';
+                label.textContent = caption.length > 30 ? caption.substring(0, 30) + '...' : caption;
+                
+                item.appendChild(img);
+                item.appendChild(filmEdge);
+                item.appendChild(label);
+                strip.appendChild(item);
+              }
+            });
+
+            console.log(`Created ${itemCount} gallery items`);
+
+            // After all images are loaded, set up seamless looping
+            // Wait for images to load to get accurate scrollWidth
+            const images = strip.querySelectorAll('img');
+            let loadedCount = 0;
+            const totalImages = images.length;
+
+            if (totalImages === 0) {
+              console.warn('No images found in captions.txt after parsing');
+              strip.innerHTML = '<div style="padding: 2rem; text-align: center; color: #64748b;">No valid images found in captions.txt. Please check the file format.</div>';
+              return;
+            }
+
+            const checkAllLoaded = () => {
+              loadedCount++;
+              if (loadedCount === totalImages) {
+                console.log(`All ${totalImages} images loaded, initializing auto-scroll`);
+                initAutoScroll();
+              }
+            };
+
+            images.forEach((img, idx) => {
+              if (img.complete) {
+                checkAllLoaded();
+              } else {
+                img.addEventListener('load', checkAllLoaded);
+                img.addEventListener('error', (e) => {
+                  console.warn(`Failed to load image ${idx + 1}: ${img.src}`);
+                  checkAllLoaded(); // Continue even if some images fail
+                });
+              }
+            });
+
+            // If all images are already cached/loaded
+            if (images.length > 0 && Array.from(images).every(img => img.complete)) {
+              console.log('All images already loaded (cached), initializing auto-scroll');
+              initAutoScroll();
+            }
+          })
+          .catch(error => {
+            console.error(`Failed to load from ${path}:`, error);
+            // Try next path
+            tryLoadCaptions(pathIndex + 1);
+          });
+      };
+
+      // Start loading
+      tryLoadCaptions(0);
+
+      function initAutoScroll() {
+        // 为了实现无缝循环，将整个条带内容克隆一份接在后面
+        const originalWidth = strip.scrollWidth;
+        const clone = strip.cloneNode(true);
+        // 只复制子元素，避免嵌套 strip
+        while (clone.firstElementChild) {
+          strip.appendChild(clone.firstElementChild);
+        }
+
+        let autoScrollId = null;
+        const step = 1.2;         // 每次滚动的像素
+        const intervalMs = 16;    // 约 60fps
+
+        function startAutoScroll() {
+          if (autoScrollId !== null) return;
+          autoScrollId = window.setInterval(() => {
+            // 当滚动距离超过原始内容宽度时，向前"跳回"一个原始宽度，形成无缝循环
+            if (viewport.scrollLeft >= originalWidth) {
+              viewport.scrollLeft -= originalWidth;
+            }
+            viewport.scrollLeft += step;
+          }, intervalMs);
+        }
+
+        function stopAutoScroll() {
+          if (autoScrollId !== null) {
+            window.clearInterval(autoScrollId);
+            autoScrollId = null;
+          }
+        }
+
+        // 悬停时暂停，移出后恢复
+        viewport.addEventListener('mouseenter', stopAutoScroll);
+        viewport.addEventListener('mouseleave', startAutoScroll);
+
+        // 初始延迟一点点再开始滚动，让用户有时间看第一页
+        setTimeout(startAutoScroll, 800);
+      }
+    })();
 
     // BibTeX Copy Logic
     function copyBib() {
