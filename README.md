@@ -102,6 +102,21 @@ We evaluate SigLIP2-L/16 models pre-trained on various Chinese datasets for emer
     <img src="Figures/new_concept.png" width="100%">
 </p>
 
+## Download
+### Huggingface
+```
+from datasets import load_dataset
+
+ds = load_dataset("DeepGlint-AI/DanQing100M")
+```
+
+### ModelScope
+```
+from modelscope.msdatasets import MsDataset
+
+ds =  MsDataset.load('deepglint/DanQing')
+```
+
 ## License
 The DanQing dataset is licensed under [CC-BY-4.0 License](https://creativecommons.org/licenses/by/4.0/).
 The full license can be found in the [LICENSE.cc-by-4.0 file](./LICENSE.cc-by-4.0).
