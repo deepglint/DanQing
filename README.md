@@ -20,12 +20,10 @@ Ziyong Feng<sup>‡</sup>,</span>
 ∗ Equal Contribution. † Project Leader. ‡ Team Leader.
 
 
-
-
 ## 📣 News
 - [2026/01/16]:✨We release the [paper]() of DanQing.
-- [2026/01/15]:🔥We release the DanQing dataset (images and captions, about 12T) in [<img src="Figures/modelscope.png" alt="示例" width="15" height="12">ModelScope](https://www.modelscope.cn/datasets/deepglint/DanQing)
-- [2026/01/13]:✨We release the DanQing dataset (URLs of image and captions) in [🤗Hugging Face](https://huggingface.co/datasets/DeepGlint-AI/DanQing100M)
+- [2026/01/15]:🔥We release the DanQing dataset (images and captions, about 12T) in [<img src="Figures/modelscope.png" alt="示例" style="width:16px; height:12px;"/> ModelScope](https://www.modelscope.cn/datasets/deepglint/DanQing)
+- [2026/01/13]:✨We release the DanQing dataset (URLs of image and captions) in [🤗 Hugging Face](https://huggingface.co/datasets/DeepGlint-AI/DanQing100M)
 
 ❗️<font color=#ff7b7a>Note: Due to the storage and transmission limitations of Hugging Face, we only release the URLs corresponding to the images on Hugging Face. To access the complete dataset, please download it from ModelScope.</font>
 
