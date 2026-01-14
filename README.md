@@ -2,7 +2,7 @@
     <img src="Figures/danqing.svg" width="50%">
 </p>
 
-## DanQing: An Up-to-Date Large-Scale Chinese Vision-Language Pre-training Dataset
+## *DanQing*: An Up-to-Date Large-Scale Chinese Vision-Language Pre-training Dataset
 Hengyu Shen<sup>∗</sup>,</span>
 <a href="https://github.com/GaryGuTC">Tiancheng Gu<sup>∗</sup></a>,</span>
 Bin Qin,</span>
@@ -44,23 +44,26 @@ In this paper, we propose DanQing dataset, which contains 100 million image-text
 </p>
 
 ### Topic Assessment
+We implement a topic modeling pipeline based on [BERTopic](https://github.com/MaartenGr/BERTopic). We randomly sample 10M image-text pairs and extract text embeddings using [Chinese-CLIP-L/14](https://github.com/OFA-Sys/Chinese-CLIP). To address high-dimensional clustering, we apply UMAP for dimensionality reduction, followed by HDBSCAN to identify semantic clusters with a minimum cluster size of 1,000 for stability and noise reduction. Finally, we use class-based TF-IDF to extract representative keywords for each topic.
 <p align="center">
     <img src="Figures/topic_examples.png" width="100%">
 </p>
 
-### Text Length and Image Resolution Distribution
-
+### Image Resolution and Text Length Distribution
+We analyze image resolutions by width, height, and minimum dimension, demonstrating a wide range of visual scales. We also report the distribution of text lengths across 2.2B Chinese words.
 <p align="center">
     <img src="Figures/statistic.png" width="100%">
 </p>
 
 ### Text Quality
-
+We evaluate the text quality of DanQing using two metrics: semantic word density and perplexity (PPL). We randomly sample 10M texts from DanQing, Wukong, and Zero for comparison. Semantic words (nouns, verbs, adjectives) are identified using the jieba toolkit, and their proportion in each sentence is calculated as semantic density. Sentence-level perplexity is computed with a pre-trained Chinese [BERT](https://huggingface.co/google-bert/bert-base-chinese) model.
 <p align="center">
     <img src="Figures/quality.png" width="100%">
 </p>
 
 ### Cosine Similarity and Semantic Distribution
+We analyze 10M-sample subsets of DanQing and Wukong by presenting image-text similarity distributions, extracted with [FG-CLIP2-L/16@256](https://huggingface.co/qihoo360/fg-clip2-large). For semantic distribution comparison, 10M images from each dataset are clustered into 10K groups using [FAISS](https://github.com/facebookresearch/faiss), with clusters ranked by sample count.
+
 <p align="center">
     <img src="Figures/distribution.png" width="100%">
 </p>
@@ -89,11 +92,14 @@ In this paper, we propose DanQing dataset, which contains 100 million image-text
 
 ## 🧠 Analysis
 ### Data and Model Scaling
+We compare the data and model scaling capabilities of DanQing and Wukong, reporting average zero-shot classification and retrieval (long & short caption) performance in below figure.
 <p align="center">
     <img src="Figures/scaling.png" width="100%">
 </p>
 
 ### New Concept Understanding
+We evaluate SigLIP2-L/16 models pre-trained on various Chinese datasets for emergent concept understanding, and find that the model trained on DanQing consistently gives the highest confidence to correct pairs.
+
 <p align="center">
     <img src="Figures/new_concept.png" width="100%">
 </p>
