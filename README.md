@@ -15,7 +15,7 @@ Hengyu Shen<sup>∗</sup>, [**Tiancheng Gu**](https://scholar.google.com/citatio
 
 <sup>∗</sup> Equal Contribution | <sup>‡</sup> Team Leader | <sup>†</sup> Project Leader
 
-[![Paper](https://img.shields.io/badge/📄-Paper-red)]()
+[![Paper](https://img.shields.io/badge/📄-Paper-red)](https://arxiv.org/abs/2601.10305)
 [![Hugging Face](https://img.shields.io/badge/🤗%20Hugging%20Face-Dataset-yellow)](https://huggingface.co/datasets/DeepGlint-AI/DanQing100M)
 [![ModelScope](https://img.shields.io/badge/ModelScope-Dataset-blue)](https://www.modelscope.cn/datasets/deepglint/DanQing)
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
@@ -27,7 +27,7 @@ Hengyu Shen<sup>∗</sup>, [**Tiancheng Gu**](https://scholar.google.com/citatio
 
 <div align="left">
 
-- [2026/01/16] ✨ We release the [paper]() of DanQing.
+- [2026/01/16] ✨ We release the [paper](https://arxiv.org/abs/2601.10305) of DanQing.
 - [2026/01/15] 🔥 We release the DanQing dataset (images and captions, about 12TB) in [<img src="Figures/modelscope.png" alt="ModelScope" style="width:16px; height:12px;"/> ModelScope](https://www.modelscope.cn/datasets/deepglint/DanQing)
 - [2026/01/13] ✨ We release the DanQing dataset (URLs of image and captions) in [🤗 Hugging Face](https://huggingface.co/datasets/DeepGlint-AI/DanQing100M)
 
@@ -253,7 +253,15 @@ The DanQing dataset is licensed under [CC-BY-4.0 License](https://creativecommon
 If you find this repository useful, please use the following BibTeX entry for citation.
 
 ```bibtex
-Coming Soon
+@misc{danqing,
+      title={DanQing: An Up-to-Date Large-Scale Chinese Vision-Language Pre-training Dataset}, 
+      author={Hengyu Shen and Tiancheng Gu and Bin Qin and Lan Wu and Yuling Wu and Shuo Tan and Zelong Sun and Jun Wang and Nan Wu and Xiang An and Weidong Cai and Ziyong Feng and Kaicheng Yang},
+      year={2026},
+      eprint={2601.10305},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2601.10305}, 
+}
 ```
 ---
 
