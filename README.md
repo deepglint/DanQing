@@ -231,7 +231,13 @@ ds = MsDataset.load('deepglint/DanQing')
 
 ```bash
 pip install modelscope
-modelscope download --dataset deepglint/DanQing
+
+# ref: https://modelscope.cn/docs/datasets/download
+# Application approved instantly
+export YOUR_MODELSCOPE_ACCESS_TOKEN=''
+export LOCAL_DIR=''
+modelscope login --token $YOUR_MODELSCOPE_ACCESS_TOKEN
+modelscope --token $YOUR_MODELSCOPE_ACCESS_TOKEN download --dataset deepglint/DanQing --local_dir $LOCAL_DIR
 ```
 
 ---
