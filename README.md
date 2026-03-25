@@ -18,7 +18,6 @@ Hengyu Shen<sup>∗</sup>, [**Tiancheng Gu**](https://scholar.google.com/citatio
 [![Paper](https://img.shields.io/badge/📄-Paper-red)](https://arxiv.org/abs/2601.10305)
 [![Hugging Face](https://img.shields.io/badge/🤗%20Hugging%20Face-Dataset-yellow)](https://huggingface.co/datasets/DeepGlint-AI/DanQing100M)
 [![ModelScope](https://img.shields.io/badge/ModelScope-Dataset-blue)](https://www.modelscope.cn/datasets/deepglint/DanQing)
-[![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
 
 
 </div>
@@ -244,7 +243,7 @@ modelscope --token $YOUR_MODELSCOPE_ACCESS_TOKEN download --dataset deepglint/Da
 
 ## 📄 License
 
-The DanQing dataset is licensed under [CC-BY-4.0 License](https://creativecommons.org/licenses/by/4.0/). The full license can be found in the [LICENSE.cc-by-4.0 file](./LICENSE.cc-by-4.0). The dataset is collected from Common Crawl web pages and may contain biased or sensitive content. The collected data is subject to the license to which each content belongs. Users are solely responsible for ensuring compliance with ethical and legal standards in their research or applications.
+The DanQing dataset is licensed under CC-BY-NC-4.0 License. The dataset is collected from Common Crawl web pages and may contain biased or sensitive content. The collected data is subject to the license to which each content belongs. Users are solely responsible for ensuring compliance with ethical and legal standards in their research or applications.
 
 ---
 
